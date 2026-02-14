@@ -23,7 +23,7 @@ function updateDiagnostics(document) {
   }
 
   const text = document.getText();
-  const findings = analyze(text);
+  const findings = analyze(text, document.uri.toString());
   const scoreResult = computeScore(findings);
 
   const diagnostics = findings.map(f => {

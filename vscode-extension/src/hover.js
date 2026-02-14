@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const { isEnvFile } = require('./diagnostics');
-const { analyze } = require('./scanner');
+const { getLastFindings } = require('./scanner');
 
 function createHoverProvider() {
   return vscode.languages.registerHoverProvider(
@@ -9,8 +9,8 @@ function createHoverProvider() {
       provideHover(document, position) {
         if (!isEnvFile(document)) return null;
 
-        const text = document.getText();
-        const findings = analyze(text);
+        // Use cached findings instead of re-scanning (#14)
+        const findings = getLastFindings(document.uri.toString());
         const lineFindings = findings.filter(f => f.line === position.line + 1);
 
         if (lineFindings.length === 0) return null;

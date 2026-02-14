@@ -86,9 +86,16 @@ function activate(context) {
     }
   }
 
+  // Debounce text change scanning (300ms) — issue #13
+  let debounceTimer;
+  function debouncedScan(document) {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => scanDocument(document), 300);
+  }
+
   const onOpen = vscode.workspace.onDidOpenTextDocument(scanDocument);
   const onSave = vscode.workspace.onDidSaveTextDocument(scanDocument);
-  const onChange = vscode.workspace.onDidChangeTextDocument(e => scanDocument(e.document));
+  const onChange = vscode.workspace.onDidChangeTextDocument(e => debouncedScan(e.document));
   const onEditorChange = vscode.window.onDidChangeActiveTextEditor(editor => {
     if (editor) {
       if (isEnvFile(editor.document)) {

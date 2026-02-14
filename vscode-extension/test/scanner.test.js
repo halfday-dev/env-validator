@@ -119,10 +119,147 @@ describe('patterns', () => {
   });
 });
 
+describe('patterns count', () => {
+  it('has at least 68 patterns matching web scanner', () => {
+    assert.ok(patterns.length >= 68, `Expected >= 68 patterns, got ${patterns.length}`);
+  });
+});
+
+describe('computeScore shape', () => {
+  it('returns color and bg fields', () => {
+    const result = computeScore([]);
+    assert.ok(result.color, 'Should have color field');
+    assert.ok(result.bg, 'Should have bg field');
+    assert.strictEqual(result.color, 'text-emerald-400');
+    assert.strictEqual(result.bg, 'border-emerald-500/30');
+  });
+
+  it('returns all 5 fields for every grade', () => {
+    const grades = [
+      { findings: [], expectedGrade: 'A' },
+      { findings: [{ severity: 'critical' }], expectedGrade: 'B' },
+      { findings: Array(2).fill({ severity: 'critical' }), expectedGrade: 'C' },
+      { findings: Array(4).fill({ severity: 'critical' }), expectedGrade: 'D' },
+      { findings: Array(10).fill({ severity: 'critical' }), expectedGrade: 'F' },
+    ];
+    for (const { findings, expectedGrade } of grades) {
+      const result = computeScore(findings);
+      assert.strictEqual(result.grade, expectedGrade);
+      assert.ok('score' in result, `${expectedGrade} missing score`);
+      assert.ok('label' in result, `${expectedGrade} missing label`);
+      assert.ok('color' in result, `${expectedGrade} missing color`);
+      assert.ok('bg' in result, `${expectedGrade} missing bg`);
+    }
+  });
+});
+
 describe('weakPasswords', () => {
   it('includes common weak passwords', () => {
     assert.ok(weakPasswords.includes('password'));
     assert.ok(weakPasswords.includes('hunter2'));
     assert.ok(weakPasswords.includes('admin'));
+  });
+});
+
+// ─── Adversarial Tests (Whipper) ───
+
+describe('adversarial: edge cases', () => {
+  it('handles file with only comments', () => {
+    const findings = analyze('# comment 1\n# comment 2\n# just notes');
+    assert.strictEqual(findings.length, 0);
+  });
+
+  it('handles CRLF line endings', () => {
+    const findings = analyze('DB_PASSWORD=password123\r\nFOO=bar\r\n');
+    const weak = findings.find(f => f.name === 'Weak/default password');
+    assert.ok(weak, 'Should detect weak password through CRLF');
+  });
+
+  it('handles keys with equals in value', () => {
+    const findings = analyze('BASE64=abc=def=ghi=');
+    // Should parse key as BASE64, value as abc=def=ghi=
+    const invalid = findings.find(f => f.name === 'Invalid key name');
+    assert.ok(!invalid, 'BASE64 is a valid key name');
+  });
+
+  it('handles unicode keys', () => {
+    const findings = analyze('密码=mysecret');
+    const invalid = findings.find(f => f.name === 'Invalid key name');
+    assert.ok(invalid, 'Unicode keys should be flagged as invalid');
+  });
+
+  it('handles emoji in values', () => {
+    // Should not crash
+    const findings = analyze('EMOJI=🔑🔑🔑🔑🔑🔑🔑🔑');
+    assert.ok(Array.isArray(findings));
+  });
+
+  it('handles null bytes in input', () => {
+    // Should not crash
+    const findings = analyze('KEY=val\x00ue');
+    assert.ok(Array.isArray(findings));
+  });
+
+  it('handles lines without equals sign', () => {
+    const findings = analyze('this is not a valid line\nFOO=bar');
+    assert.strictEqual(findings.length, 0, 'Lines without = should be skipped silently');
+  });
+
+  it('handles extremely long values', () => {
+    const longVal = 'A'.repeat(100000);
+    const findings = analyze(`KEY=${longVal}`);
+    assert.ok(Array.isArray(findings));
+  });
+
+  it('handles duplicate keys with different severity findings', () => {
+    const findings = analyze('SECRET_KEY=password123\nSECRET_KEY=ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij');
+    const dup = findings.find(f => f.name === 'Duplicate key');
+    assert.ok(dup, 'Should detect duplicate');
+    const weak = findings.find(f => f.name === 'Weak/default password');
+    assert.ok(weak, 'Should detect weak password on first occurrence');
+    const ghp = findings.find(f => f.name === 'GitHub Personal Access Token');
+    assert.ok(ghp, 'Should detect GH PAT on second occurrence');
+  });
+
+  it('handles commented secret mixed with real secret', () => {
+    const findings = analyze('# AWS_KEY=AKIAIOSFODNN7EXAMPLE\nOTHER_KEY=AKIAIOSFODNN7EXAMPLE');
+    const commented = findings.find(f => f.name.startsWith('Commented-out'));
+    const real = findings.find(f => f.name === 'AWS Access Key ID' && !f.name.startsWith('Commented'));
+    assert.ok(commented, 'Should flag commented secret');
+    assert.ok(real, 'Should also flag the real secret');
+  });
+
+  it('handles values with regex special characters', () => {
+    const findings = analyze('PATTERN=^(foo|bar).*$[0-9]+');
+    assert.ok(Array.isArray(findings)); // should not crash
+  });
+
+  it('detects mismatched quotes', () => {
+    const findings = analyze('FOO="hello');
+    const mismatch = findings.find(f => f.name === 'Mismatched quotes');
+    assert.ok(mismatch, 'Should detect mismatched quotes');
+    assert.strictEqual(mismatch.severity, 'warning');
+  });
+
+  it('detects mismatched single quotes', () => {
+    const findings = analyze("BAR='world");
+    const mismatch = findings.find(f => f.name === 'Mismatched quotes');
+    assert.ok(mismatch, 'Should detect mismatched single quotes');
+  });
+
+  it('does not flag properly quoted values', () => {
+    const findings = analyze('FOO="hello world"');
+    const mismatch = findings.find(f => f.name === 'Mismatched quotes');
+    assert.ok(!mismatch, 'Properly quoted values should not be flagged');
+  });
+
+  it('handles 10K line file without crashing', () => {
+    let bigEnv = '';
+    for (let i = 0; i < 10000; i++) bigEnv += `VAR_${i}=value_${i}\n`;
+    const start = Date.now();
+    const findings = analyze(bigEnv);
+    const elapsed = Date.now() - start;
+    assert.ok(elapsed < 5000, `Should complete in <5s, took ${elapsed}ms`);
+    assert.strictEqual(findings.length, 0);
   });
 });
