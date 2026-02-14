@@ -9,8 +9,12 @@
       <stop offset="100%" style="stop-color:#06b6d4"/>
     </linearGradient>
   </defs>
+  <!-- Background -->
   <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- Half circle arc - top half of clock -->
   <path d="M 108 256 A 148 148 0 0 1 404 256" fill="none" stroke="url(#accent)" stroke-width="28" stroke-linecap="round"/>
+  <!-- Clock hand pointing to 12 -->
   <rect x="244" y="128" width="24" height="128" rx="12" fill="url(#accent)"/>
+  <!-- Center dot -->
   <circle cx="256" cy="256" r="16" fill="url(#accent)"/>
 </svg>
