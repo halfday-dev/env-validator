@@ -7,7 +7,7 @@
   "bin": {
     "halfday-env-scan": "./src/cli.js"
   },
-  "files": ["src/lib/", "src/cli.js"],
+  "files": ["src/lib/scanner.js", "src/cli.js"],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
