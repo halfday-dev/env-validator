@@ -95,6 +95,10 @@ import Layout from '../../layouts/Layout.astro';
       info: { bg: 'bg-blue-500/10', border: 'border-blue-500/20', badge: 'bg-blue-500/20 text-blue-400', icon: '🔵' },
     };
 
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
     function syntaxHighlight(json) {
       return JSON.stringify(json, null, 2)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -176,9 +180,9 @@ import Layout from '../../layouts/Layout.astro';
               <div class="flex items-start gap-2">
                 <span class="text-sm">${c.icon}</span>
                 <div>
-                  <span class="text-sm font-medium text-gray-200">${f.title}</span>
-                  <span class="ml-2 text-xs px-2 py-0.5 rounded-full ${c.badge}">${f.severity}</span>
-                  <p class="text-xs text-gray-400 mt-1">${f.detail}</p>
+                  <span class="text-sm font-medium text-gray-200">${escapeHtml(f.title)}</span>
+                  <span class="ml-2 text-xs px-2 py-0.5 rounded-full ${c.badge}">${escapeHtml(f.severity)}</span>
+                  <p class="text-xs text-gray-400 mt-1">${escapeHtml(f.detail)}</p>
                 </div>
               </div>
             </div>`;
@@ -198,9 +202,9 @@ import Layout from '../../layouts/Layout.astro';
             const isTime = ['exp', 'iat', 'nbf'].includes(c.key);
             const isExpired = c.key === 'exp' && expiry.expired;
             return `<div class="flex items-center gap-2 py-1.5 px-3 rounded bg-gray-900/50 border border-gray-800">
-              <code class="text-emerald-400 text-xs font-mono w-10">${c.key}</code>
-              <span class="text-gray-500 text-xs hidden sm:inline w-24">${c.name}</span>
-              <span class="text-gray-300 text-xs font-mono flex-1 truncate">${val}</span>
+              <code class="text-emerald-400 text-xs font-mono w-10">${escapeHtml(c.key)}</code>
+              <span class="text-gray-500 text-xs hidden sm:inline w-24">${escapeHtml(c.name)}</span>
+              <span class="text-gray-300 text-xs font-mono flex-1 truncate">${escapeHtml(val)}</span>
               ${isExpired ? '<span class="text-xs px-1.5 py-0.5 rounded bg-red-500/20 text-red-400">expired</span>' : ''}
             </div>`;
           }).join('');
@@ -210,8 +214,8 @@ import Layout from '../../layouts/Layout.astro';
           html += claims.custom.map(c => {
             const val = typeof c.value === 'string' ? c.value : JSON.stringify(c.value);
             return `<div class="flex items-center gap-2 py-1.5 px-3 rounded bg-gray-900/50 border border-gray-800">
-              <code class="text-purple-400 text-xs font-mono">${c.key}</code>
-              <span class="text-gray-300 text-xs font-mono flex-1 truncate">${val}</span>
+              <code class="text-purple-400 text-xs font-mono">${escapeHtml(c.key)}</code>
+              <span class="text-gray-300 text-xs font-mono flex-1 truncate">${escapeHtml(val)}</span>
             </div>`;
           }).join('');
         }
