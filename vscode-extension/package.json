@@ -1,0 +1,52 @@
+{
+  "name": "env-validator",
+  "displayName": "Halfday .env Validator",
+  "description": "Security scanner for .env files — detects exposed API keys, weak passwords, and misconfigurations. Shows A-F security grade.",
+  "version": "0.1.0",
+  "publisher": "halfday",
+  "license": "MIT",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/halfday-dev/env-validator"
+  },
+  "homepage": "https://halfday.dev",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "keywords": [
+    "env",
+    "dotenv",
+    "security",
+    "secrets",
+    "api-keys",
+    "linter",
+    "validator"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/.env",
+    "workspaceContains:**/.env.*"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "dotenv",
+        "aliases": ["Environment Variables", "dotenv"],
+        "extensions": [".env"],
+        "filenames": [".env", ".env.local", ".env.development", ".env.staging", ".env.production", ".env.test", ".env.example"]
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node --test test/scanner.test.js",
+    "package": "npx @vscode/vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^2.22.0"
+  }
+}
