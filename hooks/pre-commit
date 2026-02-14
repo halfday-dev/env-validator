@@ -4,8 +4,8 @@
 
 set -euo pipefail
 
-# Find staged .env* files
-ENV_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.env' || true)
+# Find staged .env* files (match .env, .env.local, .env.production, etc.)
+ENV_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '(^|/)\.env($|\.)' || true)
 
 if [ -z "$ENV_FILES" ]; then
   exit 0
@@ -13,13 +13,13 @@ fi
 
 FAILED=0
 
-for f in $ENV_FILES; do
+while IFS= read -r f; do
   echo "🔒 Scanning $f..."
   if ! npx halfday-env-scan --quiet "$f"; then
     echo "❌ $f failed security scan (grade D-F)"
     FAILED=1
   fi
-done
+done <<< "$ENV_FILES"
 
 if [ "$FAILED" -ne 0 ]; then
   echo ""
