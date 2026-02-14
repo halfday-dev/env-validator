@@ -1,7 +1,13 @@
 {
-  "name": "halfday-env-validator",
+  "name": "halfday-env-scan",
   "type": "module",
   "version": "1.0.0",
+  "description": "Scan .env files for leaked API keys, weak passwords, and security issues",
+  "keywords": ["env", "dotenv", "security", "scanner", "secrets", "api-keys", "cli"],
+  "bin": {
+    "halfday-env-scan": "./src/cli.js"
+  },
+  "files": ["src/lib/scanner.js", "src/cli.js"],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

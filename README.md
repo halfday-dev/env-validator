@@ -21,7 +21,51 @@ Paste a `.env` file and instantly get a security report. No data leaves your bro
 - **Copy report** — one-click copy of findings for sharing
 - **100% client-side** — your secrets never leave your browser
 
-## Getting Started
+## CLI: `halfday-env-scan`
+
+Scan `.env` files from your terminal or CI pipeline — zero config needed.
+
+### Quick Start
+
+```bash
+npx halfday-env-scan .env
+```
+
+### Options
+
+```bash
+npx halfday-env-scan .env            # Pretty-print results
+npx halfday-env-scan --json .env     # JSON output (for CI)
+npx halfday-env-scan --quiet .env    # Grade only
+cat .env | npx halfday-env-scan      # Read from stdin
+```
+
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| `0`  | Grade A–C (pass) |
+| `1`  | Grade D–F (fail) |
+
+### CI Pipeline (GitHub Actions)
+
+```yaml
+- name: Scan .env for secrets
+  run: npx halfday-env-scan@latest .env.example
+```
+
+### Pre-commit Hook
+
+```bash
+# .husky/pre-commit
+npx halfday-env-scan .env && npx halfday-env-scan .env.local
+```
+
+---
+
+## Web App
+
+### Getting Started
 
 ```bash
 npm install
