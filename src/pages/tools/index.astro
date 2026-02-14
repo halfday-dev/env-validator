@@ -3,9 +3,36 @@ import Layout from '../../layouts/Layout.astro';
 
 const tools = [
   {
-    name: '.env Validator & Security Scanner',
+    name: 'Web Scanner',
     description: 'Detect leaked API keys, weak passwords, and misconfigurations in your .env files. 100% client-side — your secrets never leave your browser.',
-    href: '/tools/env-validator',
+    href: '/tools/env-validator/',
+    badge: 'Browser',
+  },
+  {
+    name: 'CLI Tool',
+    description: 'Scan .env files from your terminal. Zero dependencies, CI-friendly exit codes.',
+    href: 'https://github.com/halfday-dev/env-validator#cli-usage',
+    badge: 'Terminal',
+    code: 'npx halfday-env-scan .env',
+    external: true,
+  },
+  {
+    name: 'GitHub Action',
+    description: 'Add env scanning to your CI pipeline. Fails the build when secrets or misconfigurations are detected.',
+    href: 'https://github.com/halfday-dev/env-validator#github-action',
+    badge: 'CI/CD',
+    code: 'uses: halfday-dev/env-validator@main',
+    external: true,
+  },
+  {
+    name: 'Pre-commit Hook',
+    description: 'Block commits with leaked secrets before they hit version control. Works with the pre-commit framework.',
+    href: 'https://github.com/halfday-dev/env-validator#pre-commit-hook',
+    badge: 'Git',
+    code: `- repo: https://github.com/halfday-dev/env-validator
+  hooks:
+    - id: env-scan`,
+    external: true,
   },
 ];
 ---
@@ -16,9 +43,25 @@ const tools = [
 
     <div class="space-y-4">
       {tools.map((tool) => (
-        <a href={tool.href} class="block p-6 rounded-xl border border-white/[0.06] hover:border-emerald-500/30 bg-white/[0.02] hover:bg-white/[0.04] transition group">
-          <h2 class="text-lg font-semibold group-hover:text-emerald-400 transition">{tool.name}</h2>
-          <p class="text-gray-400 text-sm mt-1.5 leading-relaxed">{tool.description}</p>
+        <a
+          href={tool.href}
+          target={tool.external ? '_blank' : undefined}
+          rel={tool.external ? 'noopener noreferrer' : undefined}
+          class="block p-6 rounded-xl border border-white/[0.06] hover:border-emerald-500/30 bg-white/[0.02] hover:bg-white/[0.04] transition group"
+        >
+          <div class="flex items-center gap-3 mb-1.5">
+            <h2 class="text-lg font-semibold group-hover:text-emerald-400 transition">{tool.name}</h2>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-emerald-400/70 bg-emerald-400/[0.08] px-2 py-0.5 rounded-full">{tool.badge}</span>
+            {tool.external && (
+              <svg class="w-4 h-4 text-gray-500 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            )}
+          </div>
+          <p class="text-gray-400 text-sm leading-relaxed">{tool.description}</p>
+          {tool.code && (
+            <pre class="mt-3 text-sm text-emerald-300/80 bg-black/40 border border-white/[0.06] rounded-lg px-4 py-2.5 overflow-x-auto"><code>{tool.code}</code></pre>
+          )}
         </a>
       ))}
     </div>
