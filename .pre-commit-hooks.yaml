@@ -1,0 +1,6 @@
+- id: halfday-env-scan
+  name: Scan .env files for secrets
+  entry: node src/cli.js
+  language: node
+  files: '\.env'
+  types: [text]

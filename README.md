@@ -47,7 +47,27 @@ cat .env | npx halfday-env-scan      # Read from stdin
 | `0`  | Grade A–C (pass) |
 | `1`  | Grade D–F (fail) |
 
-### CI Pipeline (GitHub Actions)
+### GitHub Action
+
+Use the reusable GitHub Action in your workflows:
+
+```yaml
+# .github/workflows/env-scan.yml
+name: Env Scan
+on: [push, pull_request]
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: halfday-dev/env-validator@main
+        with:
+          path: .env.example
+          # json: true    # JSON output
+          # quiet: true   # Grade only
+```
+
+Or as a one-liner in an existing workflow:
 
 ```yaml
 - name: Scan .env for secrets
@@ -56,9 +76,24 @@ cat .env | npx halfday-env-scan      # Read from stdin
 
 ### Pre-commit Hook
 
+#### Manual Setup
+
 ```bash
-# .husky/pre-commit
-npx halfday-env-scan .env && npx halfday-env-scan .env.local
+cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+```
+
+This hook automatically scans any staged `.env*` files and blocks commits with grade D–F.
+
+#### pre-commit Framework
+
+If you use [pre-commit](https://pre-commit.com), add to your `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+  - repo: https://github.com/halfday-dev/env-validator
+    rev: main
+    hooks:
+      - id: halfday-env-scan
 ```
 
 ---

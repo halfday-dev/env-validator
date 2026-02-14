@@ -1,0 +1,23 @@
+name: 'Halfday Env Scan'
+description: 'Scan .env files for leaked API keys, weak passwords, and security issues'
+branding:
+  icon: 'shield'
+  color: 'green'
+
+inputs:
+  path:
+    description: 'Path to the .env file to scan'
+    required: false
+    default: '.env'
+  json:
+    description: 'Output results as JSON'
+    required: false
+    default: 'false'
+  quiet:
+    description: 'Only show grade and exit code'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'node20'
+  main: 'action-wrapper.cjs'
