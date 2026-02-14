@@ -1,7 +1,7 @@
 ---
 title: "We Shipped a CLI Scanner in Under an Hour — Here's How"
 description: "How we turned our browser-based .env security scanner into a zero-dependency CLI tool you can run with npx — and why CI pipelines were the obvious next step."
-date: 2025-02-13
+date: 2026-02-13
 tags: [cli, security, npm, ci-cd, tools]
 slug: cli-tool-launch
 ---
