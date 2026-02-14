@@ -164,7 +164,7 @@ We've already caught:
 This is a Halfday project, which means we ship fast, iterate in public, and move on to the next thing. But we've got ideas for this one:
 
 - **VS Code extension** — Scan on save, right in your editor
-- **CLI tool** — `npx halfday-env-scan` for CI pipeline integration
+- **CLI tool** ✅ — shipped! `npx halfday-env-scan` — [read about it →](/blog/cli-tool-launch)
 - **Team patterns** — Define custom patterns for your org's internal services
 - **Pre-commit hook** — Catch issues before they hit version control
 
