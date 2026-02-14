@@ -1,7 +1,7 @@
 ---
 title: "Your .env File Is a Ticking Time Bomb — So We Built a Scanner in Half a Day"
 description: "How we used AI to build a client-side .env security scanner that detects 50+ API key patterns without your secrets ever leaving the browser."
-date: 2025-02-13
+date: 2026-02-13
 tags: [security, dotenv, tools, ai]
 ---
 
