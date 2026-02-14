@@ -5,7 +5,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![CI](https://github.com/halfday-dev/env-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/halfday-dev/env-validator/actions/workflows/ci.yml)
 
-![Screenshot](docs/screenshot.png)
+<p align="center">
+  <img src="docs/logo.png" alt="Halfday Logo" width="128" />
+</p>
 
 ## What It Does
 
@@ -133,7 +135,7 @@ Contributions are welcome! Please open an issue first to discuss what you'd like
 
 ## License
 
-[MIT](LICENSE) © 2025 [Halfday](https://halfday.dev)
+[MIT](LICENSE) © 2026 [Halfday](https://halfday.dev)
 
 ---
 
