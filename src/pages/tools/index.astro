@@ -1,0 +1,26 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const tools = [
+  {
+    name: '.env Validator & Security Scanner',
+    description: 'Detect leaked API keys, weak passwords, and misconfigurations in your .env files. 100% client-side — your secrets never leave your browser.',
+    href: '/tools/env-validator',
+  },
+];
+---
+<Layout title="Tools — Halfday">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold tracking-tight mb-3">Tools</h1>
+    <p class="text-gray-400 mb-10">Free developer tools, built fast. All client-side, all open source.</p>
+
+    <div class="space-y-4">
+      {tools.map((tool) => (
+        <a href={tool.href} class="block p-6 rounded-xl border border-white/[0.06] hover:border-emerald-500/30 bg-white/[0.02] hover:bg-white/[0.04] transition group">
+          <h2 class="text-lg font-semibold group-hover:text-emerald-400 transition">{tool.name}</h2>
+          <p class="text-gray-400 text-sm mt-1.5 leading-relaxed">{tool.description}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>

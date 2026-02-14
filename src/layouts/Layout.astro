@@ -1,6 +1,7 @@
 ---
 interface Props { title: string; description?: string; }
-const { title, description = '.env file validator and security scanner. Detect leaked API keys, weak passwords, and misconfigurations. 100% client-side.' } = Astro.props;
+const { title, description = 'Halfday — tools built in half a day. Developer tools, build logs, and the stories behind them.' } = Astro.props;
+const currentPath = Astro.url.pathname;
 ---
 <!doctype html>
 <html lang="en" class="dark">
@@ -11,14 +12,44 @@ const { title, description = '.env file validator and security scanner. Detect l
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://halfday.dev/tools/env-validator" />
+  <meta property="og:url" content="https://halfday.dev" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <title>{title}</title>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col antialiased">
-  <slot />
+<body class="bg-[#0a0a0a] text-gray-100 min-h-screen flex flex-col antialiased">
+  <!-- Nav -->
+  <header class="border-b border-white/[0.06] px-4 py-4">
+    <div class="max-w-3xl mx-auto flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5 group">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center font-bold text-white text-sm">H</div>
+        <div>
+          <span class="font-semibold text-lg">Halfday</span>
+          <span class="text-gray-500 text-xs ml-2 hidden sm:inline">tools built in half a day</span>
+        </div>
+      </a>
+      <nav class="flex items-center gap-6 text-sm">
+        <a href="/" class:list={["transition hover:text-emerald-400", currentPath === '/' ? 'text-emerald-400' : 'text-gray-400']}>Blog</a>
+        <a href="/tools" class:list={["transition hover:text-emerald-400", currentPath.startsWith('/tools') ? 'text-emerald-400' : 'text-gray-400']}>Tools</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 px-4 py-12">
+    <slot />
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/[0.06] px-4 py-8 mt-auto">
+    <div class="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+      <span>&copy; {new Date().getFullYear()} Halfday</span>
+      <div class="flex items-center gap-5">
+        <a href="https://github.com/halfday-dev" class="hover:text-gray-300 transition">GitHub</a>
+        <a href="mailto:hello@halfday.dev" class="hover:text-gray-300 transition">hello@halfday.dev</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
