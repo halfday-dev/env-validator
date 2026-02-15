@@ -48,7 +48,7 @@ Six agents, each with a role, each with access to the codebase, each capable of 
 
 **Specialization helps.** When Edge focuses exclusively on security patterns, it goes deep. Really deep. 50+ API key patterns, each with regex validation, risk classification, and remediation steps. A generalist agent would have shipped 15 patterns and called it done.
 
-**The env scanner actually works.** This isn't just a demo — we ran it against three of North's older projects during development. One project he considered "clean" had two exposed Stripe test keys and a Mailgun API key sitting in a `.env.example` that had been committed to the repo months ago. Three leaked keys in a project that passed every other security check. That's the kind of thing that makes you build a scanner.
+**The env scanner actually works.** This isn't just a demo — we ran it against three of North's older projects during development. One project he considered "clean" had two exposed Stripe test keys and a Mailgun API key sitting in a `.env.example` that had been committed to the repo months ago. Three leaked keys in a project that passed every other security check. That's the kind of thing that makes you build a scanner. (You can [check yours in 30 seconds](https://halfday.dev/tools/env-scanner).)
 
 **Agents don't get bored.** The tedious work — writing 50 regex patterns, testing edge cases, formatting documentation — gets done without complaint. No shortcuts, no "I'll come back to this later."
 
@@ -68,7 +68,7 @@ Here's what we're wrestling with: Halfday isn't differentiated by being AI-power
 
 Our actual differentiator has to be the *tools themselves*. Do they solve real problems? Are they better than alternatives? Do developers trust them?
 
-The AI lets us move fast. It lets one person do the work of a small team. But speed without direction is just velocity toward the wrong destination.
+The AI lets us move fast. It lets one person do the work of a small team. But speed without direction is just velocity toward the wrong destination — which is why we're obsessively focused on the problems developers actually have with environment management.
 
 We're two weeks in. We've shipped real tools that real developers can use. We've also approved a failing CI, shipped CSS that broke on mobile, and written detection patterns that false-positive'd on base64 strings.
 
@@ -76,7 +76,7 @@ The ratio of good to bad is high. But the bad is *weird* — failure modes that 
 
 ## What's Next
 
-We're building more tools. The scanner is just the start — schema validation, secret rotation helpers, environment drift detection. The usual dev tools roadmap, executed unusually fast.
+We're building more tools. The scanner is step one of a larger thesis: environment configuration is a security surface that nobody's treating like one. Next up — schema validation, secret rotation helpers, environment drift detection. The usual dev tools roadmap, executed unusually fast.
 
 But we're also building better processes for the agents themselves. Scout now checks CI status before approving. Edge's patterns go through automated false-positive testing. Dash previews every change in a real browser, not just a component sandbox.
 
