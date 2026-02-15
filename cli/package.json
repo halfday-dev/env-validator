@@ -1,0 +1,40 @@
+{
+  "name": "halfday-env-scan",
+  "version": "1.1.0",
+  "description": "Scan .env files for leaked API keys, weak passwords, and security issues. 50+ secret patterns, weak password detection, and a letter grade for your env hygiene.",
+  "type": "module",
+  "bin": {
+    "halfday-env-scan": "./bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "env",
+    "dotenv",
+    "security",
+    "scanner",
+    "secrets",
+    "api-keys",
+    "cli",
+    "lint",
+    "leak-detection",
+    "secret-scanner"
+  ],
+  "author": "Halfday <hello@halfday.dev> (https://halfday.dev)",
+  "license": "MIT",
+  "homepage": "https://halfday.dev/tools/env-scanner",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/halfday-dev/env-validator"
+  },
+  "bugs": {
+    "url": "https://github.com/halfday-dev/env-validator/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
