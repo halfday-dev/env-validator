@@ -3,15 +3,16 @@ import Layout from '../../layouts/Layout.astro';
 
 const tools = [
   {
+    name: 'Secret Scanner',
+    description: 'Paste any text — code, logs, configs — to instantly detect leaked API keys, passwords, and tokens. 100% client-side.',
+    href: '/tools/secret-scanner/',
+    badge: 'New',
+    badgeColor: 'text-amber-400/70 bg-amber-400/[0.08]',
+  },
+  {
     name: 'ENV Validator',
     description: 'Detect leaked API keys, weak passwords, and misconfigurations in your .env files. 100% client-side — your secrets never leave your browser.',
     href: '/tools/env-validator/',
-    badge: 'Browser',
-  },
-  {
-    name: 'JWT Decoder',
-    description: 'Decode, inspect, and audit JSON Web Tokens. View headers, payloads, claims, and get a security grade — all client-side.',
-    href: '/tools/jwt-decoder/',
     badge: 'Browser',
   },
   {
@@ -57,7 +58,7 @@ const tools = [
         >
           <div class="flex items-center gap-3 mb-1.5">
             <h2 class="text-lg font-semibold group-hover:text-emerald-400 transition">{tool.name}</h2>
-            <span class="text-[11px] font-medium uppercase tracking-wider text-emerald-400/70 bg-emerald-400/[0.08] px-2 py-0.5 rounded-full">{tool.badge}</span>
+            <span class:list={["text-[11px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full", tool.badgeColor || 'text-emerald-400/70 bg-emerald-400/[0.08]']}>{tool.badge}</span>
             {tool.external && (
               <svg class="w-4 h-4 text-gray-500 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
