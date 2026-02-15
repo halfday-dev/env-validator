@@ -1,0 +1,538 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="CSP Builder & Validator — Halfday">
+  <div class="max-w-5xl mx-auto w-full">
+    <!-- Trust Banner -->
+    <div class="mb-6 flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3 text-emerald-400 text-sm">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      <span><strong>100% client-side.</strong> Your CSP policy never leaves your browser.</span>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-2">CSP Builder &amp; Validator</h1>
+    <p class="text-gray-400 mb-6">Visually build Content Security Policy headers or validate existing ones. Get a security grade and actionable recommendations.</p>
+
+    <!-- Tabs -->
+    <div class="flex gap-1 mb-6 bg-gray-900 rounded-lg p-1 w-fit">
+      <button id="tabBuilder" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition bg-emerald-500/20 text-emerald-400">Builder</button>
+      <button id="tabValidator" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition text-gray-400 hover:text-gray-200">Validator</button>
+    </div>
+
+    <!-- Builder Panel -->
+    <div id="builderPanel">
+      <!-- Presets -->
+      <div class="mb-6">
+        <label class="text-sm text-gray-400 mb-2 block">Quick Presets</label>
+        <div class="flex gap-2 flex-wrap">
+          <button data-preset="strict" class="preset-btn px-3 py-1.5 text-sm rounded-md bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition">🔒 Strict</button>
+          <button data-preset="moderate" class="preset-btn px-3 py-1.5 text-sm rounded-md bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 hover:bg-yellow-500/20 transition">⚖️ Moderate</button>
+          <button data-preset="permissive" class="preset-btn px-3 py-1.5 text-sm rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 transition">🌐 Permissive</button>
+          <button id="clearDirectives" class="px-3 py-1.5 text-sm rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Clear All</button>
+        </div>
+      </div>
+
+      <!-- Add Directive -->
+      <div class="mb-6 flex flex-wrap gap-2 items-end">
+        <div>
+          <label class="text-sm text-gray-400 mb-1 block">Directive</label>
+          <select id="directiveSelect" class="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <option value="default-src">default-src</option>
+            <option value="script-src">script-src</option>
+            <option value="style-src">style-src</option>
+            <option value="img-src">img-src</option>
+            <option value="connect-src">connect-src</option>
+            <option value="font-src">font-src</option>
+            <option value="frame-src">frame-src</option>
+            <option value="media-src">media-src</option>
+            <option value="object-src">object-src</option>
+            <option value="base-uri">base-uri</option>
+            <option value="form-action">form-action</option>
+            <option value="frame-ancestors">frame-ancestors</option>
+            <option value="worker-src">worker-src</option>
+            <option value="manifest-src">manifest-src</option>
+            <option value="upgrade-insecure-requests">upgrade-insecure-requests</option>
+            <option value="block-all-mixed-content">block-all-mixed-content</option>
+          </select>
+        </div>
+        <div class="flex-1 min-w-[200px]">
+          <label class="text-sm text-gray-400 mb-1 block">Sources</label>
+          <div class="flex gap-2 flex-wrap">
+            <button data-source="'self'" class="source-btn px-2 py-1 text-xs rounded bg-gray-800 hover:bg-emerald-500/20 hover:text-emerald-400 text-gray-300 transition">'self'</button>
+            <button data-source="'none'" class="source-btn px-2 py-1 text-xs rounded bg-gray-800 hover:bg-emerald-500/20 hover:text-emerald-400 text-gray-300 transition">'none'</button>
+            <button data-source="'unsafe-inline'" class="source-btn px-2 py-1 text-xs rounded bg-gray-800 hover:bg-yellow-500/20 hover:text-yellow-400 text-gray-300 transition">'unsafe-inline'</button>
+            <button data-source="'unsafe-eval'" class="source-btn px-2 py-1 text-xs rounded bg-gray-800 hover:bg-red-500/20 hover:text-red-400 text-gray-300 transition">'unsafe-eval'</button>
+            <button data-source="https:" class="source-btn px-2 py-1 text-xs rounded bg-gray-800 hover:bg-emerald-500/20 hover:text-emerald-400 text-gray-300 transition">https:</button>
+            <button data-source="data:" class="source-btn px-2 py-1 text-xs rounded bg-gray-800 hover:bg-yellow-500/20 hover:text-yellow-400 text-gray-300 transition">data:</button>
+            <button data-source="blob:" class="source-btn px-2 py-1 text-xs rounded bg-gray-800 hover:bg-yellow-500/20 hover:text-yellow-400 text-gray-300 transition">blob:</button>
+            <button data-source="*" class="source-btn px-2 py-1 text-xs rounded bg-gray-800 hover:bg-red-500/20 hover:text-red-400 text-gray-300 transition">*</button>
+          </div>
+        </div>
+      </div>
+      <div class="mb-6 flex gap-2">
+        <input id="customSource" type="text" placeholder="Custom domain (e.g. cdn.example.com)" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder-gray-600" />
+        <button id="addCustomSource" class="px-4 py-2 text-sm rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition">Add</button>
+      </div>
+
+      <!-- Active Directives -->
+      <div id="directivesList" class="space-y-2 mb-6"></div>
+
+      <!-- Generated CSP -->
+      <div class="mt-6">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-lg font-semibold">Generated CSP Header</h2>
+          <button id="copyCSP" class="text-sm px-3 py-1.5 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            <span>Copy</span>
+          </button>
+        </div>
+        <pre id="cspOutput" class="bg-gray-900 border border-gray-800 rounded-lg p-4 font-mono text-sm text-emerald-300/80 overflow-x-auto whitespace-pre-wrap break-all min-h-[60px]">Add directives above to generate your CSP header...</pre>
+      </div>
+
+      <!-- Builder Score -->
+      <div id="builderScore" class="mt-6 hidden">
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div id="builderScoreCard" class="flex-shrink-0 w-full sm:w-48 rounded-lg border border-gray-800 bg-gray-900 p-6 flex flex-col items-center justify-center">
+            <div class="text-xs uppercase tracking-wider text-gray-500 mb-1">Security Grade</div>
+            <div id="builderGrade" class="text-6xl font-black"></div>
+            <div id="builderLabel" class="text-sm mt-1"></div>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-sm font-semibold text-gray-400 mb-2">Recommendations</h3>
+            <div id="builderRecommendations" class="space-y-1"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Validator Panel -->
+    <div id="validatorPanel" class="hidden">
+      <div class="mb-4 flex items-center gap-2">
+        <button id="sampleCSP" class="text-sm px-3 py-1.5 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Load Sample</button>
+        <button id="clearCSP" class="text-sm px-3 py-1.5 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Clear</button>
+      </div>
+      <textarea id="cspInput" class="w-full h-40 bg-gray-900 border border-gray-700 rounded-lg p-4 font-mono text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-y placeholder-gray-600" placeholder="Paste your Content-Security-Policy header value here..."></textarea>
+      <button id="validateBtn" class="mt-3 px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition">Validate CSP</button>
+
+      <!-- Validator Results -->
+      <div id="validatorResults" class="mt-8 hidden">
+        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+          <div id="valScoreCard" class="flex-shrink-0 w-full sm:w-48 rounded-lg border border-gray-800 bg-gray-900 p-6 flex flex-col items-center justify-center">
+            <div class="text-xs uppercase tracking-wider text-gray-500 mb-1">Security Grade</div>
+            <div id="valGrade" class="text-6xl font-black"></div>
+            <div id="valLabel" class="text-sm mt-1"></div>
+          </div>
+          <div class="flex-1 grid grid-cols-3 gap-3">
+            <div class="rounded-lg bg-gray-900 border border-gray-800 p-4 text-center">
+              <div id="valCritCount" class="text-2xl font-bold text-red-400">0</div>
+              <div class="text-xs text-gray-500 mt-1">Critical</div>
+            </div>
+            <div class="rounded-lg bg-gray-900 border border-gray-800 p-4 text-center">
+              <div id="valWarnCount" class="text-2xl font-bold text-yellow-400">0</div>
+              <div class="text-xs text-gray-500 mt-1">Warnings</div>
+            </div>
+            <div class="rounded-lg bg-gray-900 border border-gray-800 p-4 text-center">
+              <div id="valInfoCount" class="text-2xl font-bold text-emerald-400">0</div>
+              <div class="text-xs text-gray-500 mt-1">Good</div>
+            </div>
+          </div>
+        </div>
+        <h2 class="text-lg font-semibold mb-3">Findings</h2>
+        <div id="valFindings" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === STATE ===
+    const directives = new Map();
+
+    const PRESETS = {
+      strict: {
+        'default-src': ["'none'"],
+        'script-src': ["'self'"],
+        'style-src': ["'self'"],
+        'img-src': ["'self'"],
+        'connect-src': ["'self'"],
+        'font-src': ["'self'"],
+        'object-src': ["'none'"],
+        'frame-ancestors': ["'none'"],
+        'base-uri': ["'self'"],
+        'form-action': ["'self'"],
+        'upgrade-insecure-requests': [],
+      },
+      moderate: {
+        'default-src': ["'self'"],
+        'script-src': ["'self'", "'unsafe-inline'"],
+        'style-src': ["'self'", "'unsafe-inline'"],
+        'img-src': ["'self'", "https:", "data:"],
+        'connect-src': ["'self'"],
+        'font-src': ["'self'", "https:"],
+        'object-src': ["'none'"],
+        'frame-ancestors': ["'self'"],
+        'upgrade-insecure-requests': [],
+      },
+      permissive: {
+        'default-src': ["'self'"],
+        'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https:"],
+        'style-src': ["'self'", "'unsafe-inline'", "https:"],
+        'img-src': ["*", "data:", "blob:"],
+        'connect-src': ["*"],
+        'font-src': ["*"],
+        'frame-src': ["*"],
+      },
+    };
+
+    const SAMPLE_CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.example.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.example.com; font-src 'self' https://fonts.gstatic.com; object-src 'none'; frame-ancestors 'self'; upgrade-insecure-requests";
+
+    const NO_VALUE_DIRECTIVES = ['upgrade-insecure-requests', 'block-all-mixed-content'];
+
+    // === TABS ===
+    const tabBuilder = document.getElementById('tabBuilder');
+    const tabValidator = document.getElementById('tabValidator');
+    const builderPanel = document.getElementById('builderPanel');
+    const validatorPanel = document.getElementById('validatorPanel');
+
+    tabBuilder.addEventListener('click', () => {
+      tabBuilder.classList.add('bg-emerald-500/20', 'text-emerald-400');
+      tabBuilder.classList.remove('text-gray-400');
+      tabValidator.classList.remove('bg-emerald-500/20', 'text-emerald-400');
+      tabValidator.classList.add('text-gray-400');
+      builderPanel.classList.remove('hidden');
+      validatorPanel.classList.add('hidden');
+    });
+
+    tabValidator.addEventListener('click', () => {
+      tabValidator.classList.add('bg-emerald-500/20', 'text-emerald-400');
+      tabValidator.classList.remove('text-gray-400');
+      tabBuilder.classList.remove('bg-emerald-500/20', 'text-emerald-400');
+      tabBuilder.classList.add('text-gray-400');
+      validatorPanel.classList.remove('hidden');
+      builderPanel.classList.add('hidden');
+    });
+
+    // === BUILDER ===
+    function addSource(directive, source) {
+      if (!directives.has(directive)) {
+        directives.set(directive, []);
+      }
+      const sources = directives.get(directive);
+      if (NO_VALUE_DIRECTIVES.includes(directive)) return;
+      if (!sources.includes(source)) {
+        sources.push(source);
+      }
+      render();
+    }
+
+    function addDirectiveNoValue(directive) {
+      directives.set(directive, []);
+      render();
+    }
+
+    function removeDirective(directive) {
+      directives.delete(directive);
+      render();
+    }
+
+    function removeSource(directive, source) {
+      if (directives.has(directive)) {
+        const sources = directives.get(directive);
+        const idx = sources.indexOf(source);
+        if (idx > -1) sources.splice(idx, 1);
+        if (sources.length === 0 && !NO_VALUE_DIRECTIVES.includes(directive)) {
+          directives.delete(directive);
+        }
+      }
+      render();
+    }
+
+    function generateCSP() {
+      if (directives.size === 0) return '';
+      const parts = [];
+      for (const [dir, sources] of directives) {
+        if (NO_VALUE_DIRECTIVES.includes(dir)) {
+          parts.push(dir);
+        } else {
+          parts.push(dir + ' ' + sources.join(' '));
+        }
+      }
+      return parts.join('; ');
+    }
+
+    function parseCSP(cspString) {
+      const parsed = {};
+      const parts = cspString.split(';').map(s => s.trim()).filter(Boolean);
+      for (const part of parts) {
+        const tokens = part.split(/\s+/);
+        const directive = tokens[0];
+        parsed[directive] = tokens.slice(1);
+      }
+      return parsed;
+    }
+
+    function gradeCSP(cspString) {
+      const findings = [];
+      let score = 100;
+      const parsed = parseCSP(cspString);
+
+      if (!parsed['default-src']) {
+        findings.push({ severity: 'critical', message: "Missing 'default-src' — browsers have no fallback policy", directive: 'default-src' });
+        score -= 20;
+      }
+
+      const scriptSrc = parsed['script-src'] || parsed['default-src'] || [];
+      if (scriptSrc.includes("'unsafe-inline'")) {
+        findings.push({ severity: 'warning', message: "'unsafe-inline' in script-src allows inline scripts (XSS risk)", directive: 'script-src' });
+        score -= 15;
+      }
+      if (scriptSrc.includes("'unsafe-eval'")) {
+        findings.push({ severity: 'critical', message: "'unsafe-eval' allows eval() — major XSS vector", directive: 'script-src' });
+        score -= 20;
+      }
+      if (scriptSrc.includes('data:')) {
+        findings.push({ severity: 'critical', message: "'data:' in script-src allows injection via data URIs", directive: 'script-src' });
+        score -= 15;
+      }
+      if (scriptSrc.includes('https:')) {
+        findings.push({ severity: 'warning', message: "'https:' scheme in script-src is too broad — specify exact domains", directive: 'script-src' });
+        score -= 10;
+      }
+
+      for (const [dir, sources] of Object.entries(parsed)) {
+        if (sources.includes('*')) {
+          findings.push({ severity: 'critical', message: "Wildcard '*' in " + dir + " allows loading from any origin", directive: dir });
+          score -= 15;
+        }
+      }
+
+      if (!parsed['object-src']) {
+        findings.push({ severity: 'warning', message: "Missing 'object-src' — should be set to 'none' to block plugins", directive: 'object-src' });
+        score -= 10;
+      } else if (!parsed['object-src'].includes("'none'")) {
+        findings.push({ severity: 'warning', message: "object-src should be 'none' to block Flash/Java plugins", directive: 'object-src' });
+        score -= 5;
+      }
+
+      if (!parsed['frame-ancestors']) {
+        findings.push({ severity: 'info', message: "Consider adding 'frame-ancestors' to prevent clickjacking", directive: 'frame-ancestors' });
+        score -= 5;
+      }
+
+      if (!parsed['upgrade-insecure-requests']) {
+        findings.push({ severity: 'info', message: "Consider adding 'upgrade-insecure-requests' to force HTTPS", directive: 'upgrade-insecure-requests' });
+        score -= 3;
+      }
+
+      if (!parsed['base-uri']) {
+        findings.push({ severity: 'info', message: "Consider adding 'base-uri' to prevent base tag injection", directive: 'base-uri' });
+        score -= 3;
+      }
+
+      const styleSrc = parsed['style-src'] || parsed['default-src'] || [];
+      if (styleSrc.includes("'unsafe-inline'")) {
+        findings.push({ severity: 'info', message: "'unsafe-inline' in style-src — consider using nonces or hashes instead", directive: 'style-src' });
+        score -= 3;
+      }
+
+      // Good findings
+      if (parsed['default-src'] && parsed['default-src'].includes("'none'")) {
+        findings.push({ severity: 'good', message: "default-src 'none' — excellent deny-by-default policy" });
+        score += 5;
+      }
+      if (parsed['object-src'] && parsed['object-src'].includes("'none'")) {
+        findings.push({ severity: 'good', message: "object-src 'none' — plugins properly blocked" });
+      }
+      if (parsed['upgrade-insecure-requests'] !== undefined) {
+        findings.push({ severity: 'good', message: "upgrade-insecure-requests enabled — HTTPS enforced" });
+      }
+      if (parsed['frame-ancestors'] && (parsed['frame-ancestors'].includes("'none'") || parsed['frame-ancestors'].includes("'self'"))) {
+        findings.push({ severity: 'good', message: "frame-ancestors restricted — clickjacking protection active" });
+      }
+
+      score = Math.max(0, Math.min(100, score));
+      let grade, label, color;
+      if (score >= 90) { grade = 'A'; label = 'Excellent'; color = 'text-emerald-400'; }
+      else if (score >= 75) { grade = 'B'; label = 'Good'; color = 'text-green-400'; }
+      else if (score >= 60) { grade = 'C'; label = 'Fair'; color = 'text-yellow-400'; }
+      else if (score >= 40) { grade = 'D'; label = 'Poor'; color = 'text-orange-400'; }
+      else { grade = 'F'; label = 'Failing'; color = 'text-red-400'; }
+
+      return { findings, score, grade, label, color };
+    }
+
+    function render() {
+      const listEl = document.getElementById('directivesList');
+      const outputEl = document.getElementById('cspOutput');
+      const scoreSection = document.getElementById('builderScore');
+
+      listEl.innerHTML = '';
+      for (const [dir, sources] of directives) {
+        const card = document.createElement('div');
+        card.className = 'bg-gray-900 border border-gray-800 rounded-lg p-3 flex flex-wrap items-center gap-2';
+
+        let html = '<span class="text-sm font-mono text-emerald-400 font-semibold">' + dir + '</span>';
+        if (NO_VALUE_DIRECTIVES.includes(dir)) {
+          html += '<span class="text-xs text-gray-500">(no value)</span>';
+        }
+        sources.forEach(function(s) {
+          var cls = 'bg-emerald-500/10 text-emerald-300';
+          if (s === "'unsafe-eval'" || s === '*') cls = 'bg-red-500/10 text-red-400';
+          else if (s === "'unsafe-inline'" || s === 'data:' || s === 'blob:') cls = 'bg-yellow-500/10 text-yellow-400';
+          html += '<span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded ' + cls + '">' + s + '<button data-rd="' + dir + '" data-rs="' + s + '" class="hover:text-white ml-0.5">&times;</button></span>';
+        });
+        html += '<button data-remove-directive="' + dir + '" class="ml-auto text-gray-500 hover:text-red-400 text-xs transition">Remove</button>';
+        card.innerHTML = html;
+        listEl.appendChild(card);
+      }
+
+      listEl.querySelectorAll('[data-rs]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          removeSource(btn.dataset.rd, btn.dataset.rs);
+        });
+      });
+      listEl.querySelectorAll('[data-remove-directive]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          removeDirective(btn.dataset.removeDirective);
+        });
+      });
+
+      const csp = generateCSP();
+      if (csp) {
+        outputEl.textContent = csp;
+        var result = gradeCSP(csp);
+        scoreSection.classList.remove('hidden');
+        document.getElementById('builderGrade').textContent = result.grade;
+        document.getElementById('builderGrade').className = 'text-6xl font-black ' + result.color;
+        document.getElementById('builderLabel').textContent = result.label;
+        document.getElementById('builderLabel').className = 'text-sm mt-1 ' + result.color;
+
+        var recsEl = document.getElementById('builderRecommendations');
+        var recsHtml = '';
+        result.findings.forEach(function(f) {
+          var colors = { critical: 'text-red-400 bg-red-500/10', warning: 'text-yellow-400 bg-yellow-500/10', info: 'text-blue-400 bg-blue-500/10', good: 'text-emerald-400 bg-emerald-500/10' };
+          var icons = { critical: '🔴', warning: '🟡', info: '🔵', good: '✅' };
+          recsHtml += '<div class="text-sm px-3 py-2 rounded ' + (colors[f.severity] || 'text-gray-400 bg-gray-800') + '">' + (icons[f.severity] || 'ℹ️') + ' ' + f.message + '</div>';
+        });
+        recsEl.innerHTML = recsHtml;
+      } else {
+        outputEl.textContent = 'Add directives above to generate your CSP header...';
+        scoreSection.classList.add('hidden');
+      }
+    }
+
+    // Source buttons
+    document.querySelectorAll('.source-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var dir = document.getElementById('directiveSelect').value;
+        if (NO_VALUE_DIRECTIVES.includes(dir)) {
+          addDirectiveNoValue(dir);
+        } else {
+          addSource(dir, btn.dataset.source);
+        }
+      });
+    });
+
+    // Custom source
+    document.getElementById('addCustomSource').addEventListener('click', function() {
+      var input = document.getElementById('customSource');
+      var val = input.value.trim();
+      var dir = document.getElementById('directiveSelect').value;
+      if (val) {
+        if (NO_VALUE_DIRECTIVES.includes(dir)) {
+          addDirectiveNoValue(dir);
+        } else {
+          addSource(dir, val);
+        }
+        input.value = '';
+      }
+    });
+
+    document.getElementById('customSource').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') document.getElementById('addCustomSource').click();
+    });
+
+    document.getElementById('directiveSelect').addEventListener('change', function(e) {
+      if (NO_VALUE_DIRECTIVES.includes(e.target.value)) {
+        addDirectiveNoValue(e.target.value);
+      }
+    });
+
+    // Presets
+    document.querySelectorAll('.preset-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        directives.clear();
+        var preset = PRESETS[btn.dataset.preset];
+        Object.keys(preset).forEach(function(dir) {
+          directives.set(dir, preset[dir].slice());
+        });
+        render();
+      });
+    });
+
+    document.getElementById('clearDirectives').addEventListener('click', function() {
+      directives.clear();
+      render();
+    });
+
+    // Copy CSP
+    document.getElementById('copyCSP').addEventListener('click', function() {
+      var csp = generateCSP();
+      if (csp) {
+        navigator.clipboard.writeText(csp);
+        var span = document.querySelector('#copyCSP span');
+        span.textContent = 'Copied!';
+        setTimeout(function() { span.textContent = 'Copy'; }, 2000);
+      }
+    });
+
+    // === VALIDATOR ===
+    document.getElementById('sampleCSP').addEventListener('click', function() {
+      document.getElementById('cspInput').value = SAMPLE_CSP;
+    });
+
+    document.getElementById('clearCSP').addEventListener('click', function() {
+      document.getElementById('cspInput').value = '';
+      document.getElementById('validatorResults').classList.add('hidden');
+    });
+
+    document.getElementById('validateBtn').addEventListener('click', function() {
+      var input = document.getElementById('cspInput').value.trim();
+      if (!input) return;
+
+      var result = gradeCSP(input);
+      var resultsEl = document.getElementById('validatorResults');
+      resultsEl.classList.remove('hidden');
+
+      document.getElementById('valGrade').textContent = result.grade;
+      document.getElementById('valGrade').className = 'text-6xl font-black ' + result.color;
+      document.getElementById('valLabel').textContent = result.label;
+      document.getElementById('valLabel').className = 'text-sm mt-1 ' + result.color;
+
+      var crits = result.findings.filter(function(f) { return f.severity === 'critical'; }).length;
+      var warns = result.findings.filter(function(f) { return f.severity === 'warning'; }).length;
+      var goods = result.findings.filter(function(f) { return f.severity === 'good' || f.severity === 'info'; }).length;
+      document.getElementById('valCritCount').textContent = crits;
+      document.getElementById('valWarnCount').textContent = warns;
+      document.getElementById('valInfoCount').textContent = goods;
+
+      var findingsEl = document.getElementById('valFindings');
+      var html = '';
+      result.findings.forEach(function(f) {
+        var config = {
+          critical: { bg: 'bg-red-500/10 border-red-500/20', text: 'text-red-400', icon: '🔴' },
+          warning: { bg: 'bg-yellow-500/10 border-yellow-500/20', text: 'text-yellow-400', icon: '🟡' },
+          info: { bg: 'bg-blue-500/10 border-blue-500/20', text: 'text-blue-400', icon: '🔵' },
+          good: { bg: 'bg-emerald-500/10 border-emerald-500/20', text: 'text-emerald-400', icon: '✅' },
+        }[f.severity] || { bg: 'bg-gray-800', text: 'text-gray-400', icon: 'ℹ️' };
+        html += '<div class="px-4 py-3 rounded-lg border ' + config.bg + ' ' + config.text + ' text-sm flex items-start gap-2"><span>' + config.icon + '</span><div><span>' + f.message + '</span>' + (f.directive ? '<span class="ml-2 font-mono text-xs opacity-60">' + f.directive + '</span>' : '') + '</div></div>';
+      });
+      findingsEl.innerHTML = html;
+    });
+
+    document.getElementById('cspInput').addEventListener('input', function() {
+      var val = document.getElementById('cspInput').value.trim();
+      if (val.length > 10) {
+        document.getElementById('validateBtn').click();
+      }
+    });
+  </script>
+</Layout>
