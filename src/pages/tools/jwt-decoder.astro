@@ -1,0 +1,261 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="JWT Decoder & Inspector — Halfday" description="Decode, inspect, and audit JSON Web Tokens. 100% client-side — your tokens never leave your browser.">
+  <div class="max-w-6xl mx-auto w-full">
+    <!-- Trust Banner -->
+    <div class="mb-6 flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3 text-emerald-400 text-sm">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      <span><strong>Your tokens never leave your browser.</strong> All decoding and analysis runs 100% client-side. No data is sent to any server.</span>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-2">JWT Decoder & Inspector</h1>
+    <p class="text-gray-400 mb-6">Paste a JSON Web Token to decode, inspect claims, and run a security audit.</p>
+
+    <!-- Status Bar -->
+    <div id="statusBar" class="hidden mb-6 flex flex-wrap items-center gap-3">
+      <div id="statusAlg" class="text-sm px-3 py-1.5 rounded-full bg-gray-800 border border-gray-700 text-gray-300"></div>
+      <div id="statusExpiry" class="text-sm px-3 py-1.5 rounded-full bg-gray-800 border border-gray-700 text-gray-300"></div>
+      <div id="statusGrade" class="text-sm px-3 py-1.5 rounded-full font-semibold"></div>
+    </div>
+
+    <!-- Three-panel layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Left: Input -->
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <button id="sampleBtn" class="text-sm px-3 py-1.5 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Load Sample</button>
+          <button id="clearBtn" class="text-sm px-3 py-1.5 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Clear</button>
+        </div>
+        <textarea id="jwtInput" class="w-full h-48 bg-gray-900 border border-gray-700 rounded-lg p-4 font-mono text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-y placeholder-gray-600" placeholder="Paste your JWT here (eyJhbGci...)"></textarea>
+
+        <!-- Error display -->
+        <div id="errorBox" class="hidden mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+
+        <!-- Security Audit -->
+        <div id="auditSection" class="hidden mt-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold">Security Audit</h2>
+            <div id="gradeCard" class="flex items-center gap-2">
+              <span class="text-xs uppercase tracking-wider text-gray-500">Grade:</span>
+              <span id="gradeLetter" class="text-2xl font-black"></span>
+            </div>
+          </div>
+          <div id="auditList" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Right: Decoded panels -->
+      <div class="space-y-6">
+        <!-- Header -->
+        <div id="headerSection" class="hidden">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-cyan-400">Header</h2>
+            <button class="copy-btn text-xs px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition" data-target="headerJson">Copy</button>
+          </div>
+          <pre id="headerJson" class="bg-gray-900 border border-cyan-500/20 rounded-lg p-4 font-mono text-sm text-cyan-300 overflow-x-auto"></pre>
+        </div>
+
+        <!-- Payload -->
+        <div id="payloadSection" class="hidden">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-emerald-400">Payload</h2>
+            <button class="copy-btn text-xs px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition" data-target="payloadJson">Copy</button>
+          </div>
+          <pre id="payloadJson" class="bg-gray-900 border border-emerald-500/20 rounded-lg p-4 font-mono text-sm text-emerald-300 overflow-x-auto"></pre>
+        </div>
+
+        <!-- Signature -->
+        <div id="signatureSection" class="hidden">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-rose-400 mb-2">Signature</h2>
+          <div class="bg-gray-900 border border-rose-500/20 rounded-lg p-4 font-mono text-sm text-rose-300 break-all" id="signatureValue"></div>
+        </div>
+
+        <!-- Claims Inspector -->
+        <div id="claimsSection" class="hidden">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-2">Claims Inspector</h2>
+          <div id="claimsList" class="space-y-1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import { decodeJWT, checkExpiry, inspectClaims, securityAudit, computeGrade, getAlgorithmInfo, formatTimestamp } from '../../lib/jwt-decoder.js';
+
+    // Sample JWT (RS256, standard claims, expires in future relative to build time)
+    const sampleJWT = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImhhbGZkYXktMSJ9.eyJpc3MiOiJodHRwczovL2F1dGguaGFsZmRheS5kZXYiLCJzdWIiOiJ1c2VyXzQyIiwiYXVkIjoiaHR0cHM6Ly9hcGkuaGFsZmRheS5kZXYiLCJleHAiOjE4MDAwMDAwMDAsImlhdCI6MTcwMDAwMDAwMCwibmJmIjoxNzAwMDAwMDAwLCJqdGkiOiJhYmMxMjMiLCJuYW1lIjoiSGFsZmRheSBVc2VyIiwicm9sZSI6ImRldiIsInBlcm1pc3Npb25zIjpbInJlYWQiLCJ3cml0ZSJdfQ.fake-signature-for-demo';
+
+    const input = document.getElementById('jwtInput');
+    const errorBox = document.getElementById('errorBox');
+    const statusBar = document.getElementById('statusBar');
+    const severityConfig = {
+      critical: { bg: 'bg-red-500/10', border: 'border-red-500/20', badge: 'bg-red-500/20 text-red-400', icon: '🔴' },
+      warning: { bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', badge: 'bg-yellow-500/20 text-yellow-400', icon: '🟡' },
+      info: { bg: 'bg-blue-500/10', border: 'border-blue-500/20', badge: 'bg-blue-500/20 text-blue-400', icon: '🔵' },
+    };
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function syntaxHighlight(json) {
+      return JSON.stringify(json, null, 2)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"([^"]+)"(?=\s*:)/g, '<span class="text-gray-400">"$1"</span>')
+        .replace(/: "([^"]*)"(,?)/g, ': <span class="text-amber-300">"$1"</span>$2')
+        .replace(/: (\d+)(,?)/g, ': <span class="text-purple-400">$1</span>$2')
+        .replace(/: (true|false)(,?)/g, ': <span class="text-blue-400">$1</span>$2')
+        .replace(/: (null)(,?)/g, ': <span class="text-gray-500">$1</span>$2');
+    }
+
+    function render(token) {
+      const sections = ['headerSection', 'payloadSection', 'signatureSection', 'claimsSection', 'auditSection'];
+      
+      if (!token.trim()) {
+        sections.forEach(id => document.getElementById(id).classList.add('hidden'));
+        statusBar.classList.add('hidden');
+        errorBox.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const decoded = decodeJWT(token);
+        errorBox.classList.add('hidden');
+
+        // Header
+        document.getElementById('headerSection').classList.remove('hidden');
+        document.getElementById('headerJson').innerHTML = syntaxHighlight(decoded.header);
+
+        // Payload
+        document.getElementById('payloadSection').classList.remove('hidden');
+        document.getElementById('payloadJson').innerHTML = syntaxHighlight(decoded.payload);
+
+        // Signature
+        document.getElementById('signatureSection').classList.remove('hidden');
+        document.getElementById('signatureValue').textContent = decoded.signature || '(empty — unsigned token)';
+
+        // Status bar
+        statusBar.classList.remove('hidden');
+        const algInfo = getAlgorithmInfo(decoded.header.alg);
+        document.getElementById('statusAlg').textContent = `Algorithm: ${decoded.header.alg || 'none'}`;
+        
+        const expiry = checkExpiry(decoded.payload);
+        const expiryEl = document.getElementById('statusExpiry');
+        if (expiry.expiresIn === null) {
+          expiryEl.textContent = 'No expiration';
+          expiryEl.className = 'text-sm px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400';
+        } else if (expiry.expired) {
+          expiryEl.textContent = 'Expired';
+          expiryEl.className = 'text-sm px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400';
+        } else if (expiry.notYetValid) {
+          expiryEl.textContent = 'Not yet valid';
+          expiryEl.className = 'text-sm px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400';
+        } else {
+          const hrs = Math.floor(expiry.expiresIn / 3600);
+          const mins = Math.floor((expiry.expiresIn % 3600) / 60);
+          expiryEl.textContent = hrs > 0 ? `Expires in ${hrs}h ${mins}m` : `Expires in ${mins}m`;
+          expiryEl.className = 'text-sm px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400';
+        }
+
+        // Security audit
+        const audit = securityAudit(decoded.header, decoded.payload);
+        const grade = computeGrade(audit);
+        
+        const gradeEl = document.getElementById('statusGrade');
+        gradeEl.textContent = `Grade: ${grade.grade}`;
+        gradeEl.className = `text-sm px-3 py-1.5 rounded-full font-semibold ${grade.color} ${grade.bg}`;
+
+        document.getElementById('auditSection').classList.remove('hidden');
+        document.getElementById('gradeLetter').textContent = grade.grade;
+        document.getElementById('gradeLetter').className = `text-2xl font-black ${grade.color}`;
+
+        const auditList = document.getElementById('auditList');
+        if (audit.length === 0) {
+          auditList.innerHTML = '<p class="text-gray-500 text-sm">✅ No security issues found.</p>';
+        } else {
+          auditList.innerHTML = audit.map(f => {
+            const c = severityConfig[f.severity];
+            return `<div class="rounded-lg ${c.bg} border ${c.border} p-3">
+              <div class="flex items-start gap-2">
+                <span class="text-sm">${c.icon}</span>
+                <div>
+                  <span class="text-sm font-medium text-gray-200">${escapeHtml(f.title)}</span>
+                  <span class="ml-2 text-xs px-2 py-0.5 rounded-full ${c.badge}">${escapeHtml(f.severity)}</span>
+                  <p class="text-xs text-gray-400 mt-1">${escapeHtml(f.detail)}</p>
+                </div>
+              </div>
+            </div>`;
+          }).join('');
+        }
+
+        // Claims inspector
+        document.getElementById('claimsSection').classList.remove('hidden');
+        const claims = inspectClaims(decoded.payload);
+        const claimsList = document.getElementById('claimsList');
+        
+        let html = '';
+        if (claims.standard.length > 0) {
+          html += '<div class="text-xs text-gray-500 uppercase tracking-wider mb-1 mt-2">Standard Claims</div>';
+          html += claims.standard.map(c => {
+            const val = c.formattedValue || JSON.stringify(c.value);
+            const isTime = ['exp', 'iat', 'nbf'].includes(c.key);
+            const isExpired = c.key === 'exp' && expiry.expired;
+            return `<div class="flex items-center gap-2 py-1.5 px-3 rounded bg-gray-900/50 border border-gray-800">
+              <code class="text-emerald-400 text-xs font-mono w-10">${escapeHtml(c.key)}</code>
+              <span class="text-gray-500 text-xs hidden sm:inline w-24">${escapeHtml(c.name)}</span>
+              <span class="text-gray-300 text-xs font-mono flex-1 truncate">${escapeHtml(val)}</span>
+              ${isExpired ? '<span class="text-xs px-1.5 py-0.5 rounded bg-red-500/20 text-red-400">expired</span>' : ''}
+            </div>`;
+          }).join('');
+        }
+        if (claims.custom.length > 0) {
+          html += '<div class="text-xs text-gray-500 uppercase tracking-wider mb-1 mt-3">Custom Claims</div>';
+          html += claims.custom.map(c => {
+            const val = typeof c.value === 'string' ? c.value : JSON.stringify(c.value);
+            return `<div class="flex items-center gap-2 py-1.5 px-3 rounded bg-gray-900/50 border border-gray-800">
+              <code class="text-purple-400 text-xs font-mono">${escapeHtml(c.key)}</code>
+              <span class="text-gray-300 text-xs font-mono flex-1 truncate">${escapeHtml(val)}</span>
+            </div>`;
+          }).join('');
+        }
+        claimsList.innerHTML = html || '<p class="text-gray-500 text-sm">No claims found.</p>';
+
+      } catch (err) {
+        sections.forEach(id => document.getElementById(id).classList.add('hidden'));
+        statusBar.classList.add('hidden');
+        errorBox.classList.remove('hidden');
+        errorBox.textContent = err.message;
+      }
+    }
+
+    // Events
+    let debounce;
+    input.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => render(input.value), 100);
+    });
+
+    document.getElementById('sampleBtn').addEventListener('click', () => {
+      input.value = sampleJWT;
+      render(sampleJWT);
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      input.value = '';
+      render('');
+    });
+
+    // Copy buttons
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = document.getElementById(btn.dataset.target);
+        navigator.clipboard.writeText(target.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => btn.textContent = orig, 1500);
+        });
+      });
+    });
+  </script>
+</Layout>
