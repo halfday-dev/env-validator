@@ -1,0 +1,82 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const tools = [
+  {
+    name: 'CSP Builder & Validator',
+    description: 'Visually build Content Security Policy headers with presets and recommendations, or validate existing CSPs with a security grade. 100% client-side.',
+    href: '/tools/csp-builder/',
+    badge: 'New',
+    badgeColor: 'text-amber-400/70 bg-amber-400/[0.08]',
+  },
+  {
+    name: 'Secret Scanner',
+    description: 'Paste any text — code, logs, configs — to instantly detect leaked API keys, passwords, and tokens. 100% client-side.',
+    href: '/tools/secret-scanner/',
+    badge: 'Browser',
+  },
+  {
+    name: 'ENV Validator',
+    description: 'Detect leaked API keys, weak passwords, and misconfigurations in your .env files. 100% client-side — your secrets never leave your browser.',
+    href: '/tools/env-validator/',
+    badge: 'Browser',
+  },
+  {
+    name: 'CLI Tool',
+    description: 'Scan .env files from your terminal. Zero dependencies, CI-friendly exit codes.',
+    href: 'https://github.com/halfday-dev/env-validator#cli-usage',
+    badge: 'Terminal',
+    code: 'npx halfday-env-scan .env',
+    external: true,
+  },
+  {
+    name: 'GitHub Action',
+    description: 'Add env scanning to your CI pipeline. Fails the build when secrets or misconfigurations are detected.',
+    href: 'https://github.com/halfday-dev/env-validator#github-action',
+    badge: 'CI/CD',
+    code: 'uses: halfday-dev/env-validator@main',
+    external: true,
+  },
+  {
+    name: 'Pre-commit Hook',
+    description: 'Block commits with leaked secrets before they hit version control. Works with the pre-commit framework.',
+    href: 'https://github.com/halfday-dev/env-validator#pre-commit-hook',
+    badge: 'Git',
+    code: `- repo: https://github.com/halfday-dev/env-validator
+  hooks:
+    - id: env-scan`,
+    external: true,
+  },
+];
+---
+<Layout title="Tools — Halfday">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold tracking-tight mb-3">Tools</h1>
+    <p class="text-gray-400 mb-10">Free developer tools, built fast. All client-side, all open source.</p>
+
+    <div class="space-y-4">
+      {tools.map((tool) => (
+        <a
+          href={tool.href}
+          target={tool.external ? '_blank' : undefined}
+          rel={tool.external ? 'noopener noreferrer' : undefined}
+          class="block p-6 rounded-xl border border-white/[0.06] hover:border-emerald-500/30 bg-white/[0.02] hover:bg-white/[0.04] transition group"
+        >
+          <div class="flex items-center gap-3 mb-1.5">
+            <h2 class="text-lg font-semibold group-hover:text-emerald-400 transition">{tool.name}</h2>
+            <span class:list={["text-[11px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full", tool.badgeColor || 'text-emerald-400/70 bg-emerald-400/[0.08]']}>{tool.badge}</span>
+            {tool.external && (
+              <svg class="w-4 h-4 text-gray-500 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            )}
+          </div>
+          <p class="text-gray-400 text-sm leading-relaxed">{tool.description}</p>
+          {tool.code && (
+            <pre class="mt-3 text-sm text-emerald-300/80 bg-black/40 border border-white/[0.06] rounded-lg px-4 py-2.5 overflow-x-auto"><code>{tool.code}</code></pre>
+          )}
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>
