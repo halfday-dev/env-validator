@@ -1,4 +1,4 @@
-name: 'Halfday Env Scan'
+name: 'Halfday Env Scanner'
 description: 'Scan .env files for leaked API keys, weak passwords, and security issues'
 branding:
   icon: 'shield'
@@ -8,16 +8,32 @@ inputs:
   path:
     description: 'Path to the .env file to scan'
     required: false
-    default: '.env'
-  json:
-    description: 'Output results as JSON'
+    default: '.env.example'
+  fail-grade:
+    description: 'Minimum passing grade (A-F). Grades below this fail the step.'
     required: false
-    default: 'false'
-  quiet:
-    description: 'Only show grade and exit code'
+    default: 'D'
+  comment-on-pr:
+    description: 'Post findings as a PR comment'
     required: false
-    default: 'false'
+    default: 'true'
+  halfday-token:
+    description: 'Halfday Pro token (reserved for future use)'
+    required: false
+    default: ''
+  config:
+    description: 'Path to .halfday.yml config (reserved for future use)'
+    required: false
+    default: ''
 
 runs:
-  using: 'node20'
-  main: 'action-wrapper.cjs'
+  using: 'composite'
+  steps:
+    - name: Run Halfday Env Scanner
+      shell: bash
+      run: bash ${{ github.action_path }}/entrypoint.sh
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_FAIL_GRADE: ${{ inputs.fail-grade }}
+        INPUT_COMMENT_ON_PR: ${{ inputs.comment-on-pr }}
+        GITHUB_TOKEN: ${{ github.token }}

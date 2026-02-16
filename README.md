@@ -51,29 +51,61 @@ cat .env | npx halfday-env-scan      # Read from stdin
 
 ### GitHub Action
 
-Use the reusable GitHub Action in your workflows:
+Automatically scan `.env` files on every PR — with optional PR comments showing findings.
+
+#### Quick Setup
 
 ```yaml
 # .github/workflows/env-scan.yml
 name: Env Scan
-on: [push, pull_request]
+on: [pull_request]
 jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: halfday-dev/env-validator@main
+      - uses: halfday-dev/env-validator@v1
         with:
           path: .env.example
-          # json: true    # JSON output
-          # quiet: true   # Grade only
+          fail-grade: D
+          comment-on-pr: 'true'
 ```
 
-Or as a one-liner in an existing workflow:
+#### Inputs
+
+| Input | Default | Description |
+|-------|---------|-------------|
+| `path` | `.env.example` | Path to the .env file to scan |
+| `fail-grade` | `D` | Minimum passing grade (A–F). Grades below this fail the step. |
+| `comment-on-pr` | `true` | Post findings as a PR comment |
+| `halfday-token` | — | Halfday Pro token (reserved for future use) |
+| `config` | — | Path to `.halfday.yml` config (reserved for future use) |
+
+#### PR Comment Example
+
+When `comment-on-pr` is enabled, the action posts a comment like this:
+
+> ## 🟠 Halfday Env Scanner — Grade: C
+>
+> **File:** `.env.example`
+> **Findings:** 3 (1 critical, 1 warning, 1 info)
+>
+> ### Findings
+>
+> | Severity | Key | Issue |
+> |----------|-----|-------|
+> | 🔴 Critical | `AWS_SECRET_ACCESS_KEY` | Detected AWS secret key |
+> | 🟡 Warning | `DB_PASSWORD` | Weak or default password |
+> | ℹ️ Info | `DEBUG` | Empty value |
+>
+> ---
+> <sub>🔒 Scanned by [Halfday](https://halfday.dev) — secure your .env files</sub>
+
+#### One-liner (no action needed)
 
 ```yaml
 - name: Scan .env for secrets
-  run: npx halfday-env-scan@latest .env.example
+  run: npx halfday-env-scan@^1 .env.example
 ```
 
 ### Pre-commit Hook
