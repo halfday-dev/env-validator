@@ -115,10 +115,13 @@ import Layout from '../../layouts/Layout.astro';
       { name: 'Private Key', pattern: /-----BEGIN\s+(RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----/ },
       { name: 'Slack Token', pattern: /xox[bpas]-[0-9a-zA-Z-]{10,}/ },
       { name: 'Stripe Secret Key', pattern: /sk_live_[0-9a-zA-Z]{24,}/ },
-      { name: 'Stripe Publishable Key', pattern: /pk_live_[0-9a-zA-Z]{24,}/ },
+      { name: 'Google API Key', pattern: /AIzaSy[A-Za-z0-9_-]{33}/ },
+      { name: 'Twilio API Key', pattern: /SK[a-f0-9]{32}/ },
+      { name: 'SendGrid API Key', pattern: /SG\.[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}/ },
+      { name: 'Database URL with credentials', pattern: /(postgres|mysql|mongodb|redis):\/\/[^:]+:[^@]+@/ },
     ];
 
-    const SENSITIVE_KEY_NAMES = /^(api[_-]?key|apikey|secret|token|password|passwd|credential|auth[_-]?token|access[_-]?token|private[_-]?key|secret[_-]?key|api[_-]?secret)$/i;
+    const SENSITIVE_KEY_NAMES = /^(api[_-]?key|apikey|secret|token|password|passwd|credential|auth[_-]?token|access[_-]?token|private[_-]?key|secret[_-]?key|api[_-]?secret|database[_-]?url|connection[_-]?string|dsn)$/i;
 
     function detectSecrets(obj, path = '') {
       const findings = [];
@@ -207,13 +210,41 @@ import Layout from '../../layouts/Layout.astro';
 
     // --- Syntax highlight ---
     function highlight(json) {
-      return json
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"([^"\\]*(\\.[^"\\]*)*)"\s*:/g, '<span class="text-gray-400">"$1"</span>:')
-        .replace(/:\s*"([^"\\]*(\\.[^"\\]*)*)"/g, ': <span class="text-amber-300">"$1"</span>')
-        .replace(/:\s*(\d+\.?\d*)/g, ': <span class="text-purple-400">$1</span>')
-        .replace(/:\s*(true|false)/g, ': <span class="text-blue-400">$1</span>')
-        .replace(/:\s*(null)/g, ': <span class="text-gray-500">$1</span>');
+      const tokens = [];
+      let i = 0;
+      while (i < json.length) {
+        if (/\s/.test(json[i])) {
+          let start = i;
+          while (i < json.length && /\s/.test(json[i])) i++;
+          tokens.push({ type: 'ws', text: json.slice(start, i) });
+          continue;
+        }
+        if (json[i] === '"') {
+          let start = i; i++;
+          while (i < json.length && json[i] !== '"') { if (json[i] === '\\') i++; i++; }
+          i++;
+          const raw = json.slice(start, i);
+          let j = i; while (j < json.length && /\s/.test(json[j])) j++;
+          tokens.push({ type: json[j] === ':' ? 'key' : 'string', text: raw });
+          continue;
+        }
+        if (/[-\d]/.test(json[i])) {
+          let start = i;
+          while (i < json.length && /[\d.eE+\-]/.test(json[i])) i++;
+          tokens.push({ type: 'number', text: json.slice(start, i) });
+          continue;
+        }
+        if (json.slice(i, i + 4) === 'true') { tokens.push({ type: 'bool', text: 'true' }); i += 4; continue; }
+        if (json.slice(i, i + 5) === 'false') { tokens.push({ type: 'bool', text: 'false' }); i += 5; continue; }
+        if (json.slice(i, i + 4) === 'null') { tokens.push({ type: 'null', text: 'null' }); i += 4; continue; }
+        tokens.push({ type: 'punct', text: json[i] }); i++;
+      }
+      const colorMap = { key: 'text-gray-400', string: 'text-amber-300', number: 'text-purple-400', bool: 'text-blue-400', null: 'text-gray-500' };
+      return tokens.map(t => {
+        const escaped = t.text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const cls = colorMap[t.type];
+        return cls ? `<span class="${cls}">${escaped}</span>` : escaped;
+      }).join('');
     }
 
     // --- Get indent ---
@@ -260,19 +291,18 @@ import Layout from '../../layouts/Layout.astro';
 
       // Tree
       treeOutput.innerHTML = buildTree(parsed);
-      treeOutput.querySelectorAll('.tree-toggle').forEach(el => {
-        el.addEventListener('click', () => {
-          const target = document.getElementById(el.dataset.target);
-          const arrow = el.querySelector('.tree-arrow');
-          if (target.classList.contains('hidden')) {
-            target.classList.remove('hidden');
-            arrow.textContent = '▼';
-          } else {
-            target.classList.add('hidden');
-            arrow.textContent = '▶';
-          }
+      if (!treeOutput.dataset.delegated) {
+        treeOutput.addEventListener('click', (e) => {
+          const toggle = e.target.closest('.tree-toggle');
+          if (!toggle) return;
+          const target = document.getElementById(toggle.dataset.target);
+          const arrow = toggle.querySelector('.tree-arrow');
+          if (!target) return;
+          target.classList.toggle('hidden');
+          arrow.textContent = target.classList.contains('hidden') ? '▶' : '▼';
         });
-      });
+        treeOutput.dataset.delegated = '1';
+      }
 
       // Status
       statusBar.classList.remove('hidden');
