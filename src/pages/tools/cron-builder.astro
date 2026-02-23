@@ -1,0 +1,490 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="Cron Expression Builder — Free Online Tool | Halfday" description="Build, decode, and test cron expressions visually. See human-readable descriptions, next 10 run times with timezone support, and GitHub Actions cron mode. 100% client-side — your data never leaves your browser.">
+  <div class="max-w-6xl mx-auto w-full">
+    <!-- Trust Banner -->
+    <div class="mb-6 flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3 text-emerald-400 text-sm">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      <span><strong>Your data never leaves your browser.</strong> All cron parsing runs 100% client-side. No data is sent to any server.</span>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-2">Cron Expression Builder</h1>
+    <p class="text-gray-400 mb-6">Build, decode, and test cron expressions. See next run times with timezone support.</p>
+
+    <!-- Controls row -->
+    <div class="flex flex-wrap items-center gap-3 mb-4">
+      <button id="copyBtn" class="px-3 py-1.5 text-sm rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition">Copy Expression</button>
+      <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer select-none">
+        <input type="checkbox" id="ghToggle" class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0 accent-emerald-500">
+        GitHub Actions mode
+      </label>
+      <div class="flex items-center gap-2 ml-auto">
+        <label class="text-xs text-gray-500">Timezone:</label>
+        <select id="tzSelect" class="text-sm bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-500"></select>
+      </div>
+    </div>
+
+    <!-- GitHub Actions warning -->
+    <div id="ghWarning" class="hidden mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm">
+      <strong>GitHub Actions:</strong> <span id="ghWarningText"></span>
+    </div>
+
+    <!-- Cron expression input -->
+    <div class="mb-4">
+      <label class="text-xs text-gray-500 uppercase tracking-wider mb-2 block">Cron Expression</label>
+      <input id="cronInput" type="text" value="0 9 * * 1" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 font-mono text-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent placeholder-gray-600" placeholder="* * * * *" spellcheck="false" autocomplete="off">
+      <div class="flex gap-4 mt-1.5 text-xs text-gray-600 font-mono">
+        <span>minute</span><span>hour</span><span>day(month)</span><span>month</span><span>day(week)</span>
+      </div>
+    </div>
+
+    <!-- Human description -->
+    <div id="description" class="mb-6 p-4 rounded-lg bg-gray-900 border border-gray-700 text-emerald-400 text-lg font-medium"></div>
+
+    <!-- Error display -->
+    <div id="errorBox" class="hidden mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Visual Builder -->
+      <div class="lg:col-span-2 space-y-4">
+        <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Visual Builder</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">Minute</label>
+            <select id="fMinute" class="w-full text-sm bg-gray-800 border border-gray-700 rounded px-2 py-2 text-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-500"></select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">Hour</label>
+            <select id="fHour" class="w-full text-sm bg-gray-800 border border-gray-700 rounded px-2 py-2 text-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-500"></select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">Day (Month)</label>
+            <select id="fDom" class="w-full text-sm bg-gray-800 border border-gray-700 rounded px-2 py-2 text-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-500"></select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">Month</label>
+            <select id="fMonth" class="w-full text-sm bg-gray-800 border border-gray-700 rounded px-2 py-2 text-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-500"></select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">Day (Week)</label>
+            <select id="fDow" class="w-full text-sm bg-gray-800 border border-gray-700 rounded px-2 py-2 text-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-500"></select>
+          </div>
+        </div>
+
+        <!-- Presets -->
+        <div>
+          <h3 class="text-xs text-gray-500 uppercase tracking-wider mb-2">Quick Presets</h3>
+          <div class="flex flex-wrap gap-2" id="presets"></div>
+        </div>
+
+        <!-- Next 10 runs -->
+        <div>
+          <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-2">Next 10 Run Times</h2>
+          <div id="nextRuns" class="bg-gray-900 border border-gray-700 rounded-lg p-4 font-mono text-sm text-gray-300 space-y-1"></div>
+        </div>
+      </div>
+
+      <!-- Common Examples sidebar -->
+      <div>
+        <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Common Examples</h2>
+        <div class="space-y-2" id="examples"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============ CRON PARSER ENGINE ============
+    const MONTH_NAMES = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+    function parseField(field, min, max) {
+      const values = new Set();
+      for (const part of field.split(',')) {
+        const stepMatch = part.match(/^(.+)\/(\d+)$/);
+        let range = stepMatch ? stepMatch[1] : part;
+        const step = stepMatch ? parseInt(stepMatch[2]) : 1;
+
+        if (range === '*') {
+          for (let i = min; i <= max; i += step) values.add(i);
+        } else if (range.includes('-')) {
+          const [a, b] = range.split('-').map(Number);
+          if (isNaN(a) || isNaN(b) || a < min || b > max) throw new Error(`Invalid range: ${part}`);
+          for (let i = a; i <= b; i += step) values.add(i);
+        } else {
+          const n = parseInt(range);
+          if (isNaN(n) || n < min || n > max) throw new Error(`Invalid value: ${part} (expected ${min}-${max})`);
+          if (step === 1) { values.add(n); }
+          else { for (let i = n; i <= max; i += step) values.add(i); }
+        }
+      }
+      return [...values].sort((a, b) => a - b);
+    }
+
+    function parseCron(expr) {
+      const parts = expr.trim().split(/\s+/);
+      if (parts.length !== 5) throw new Error('Cron expression must have exactly 5 fields');
+      return {
+        minutes: parseField(parts[0], 0, 59),
+        hours: parseField(parts[1], 0, 23),
+        doms: parseField(parts[2], 1, 31),
+        months: parseField(parts[3], 1, 12),
+        dows: [...new Set(parseField(parts[4], 0, 7).map(d => d === 7 ? 0 : d))], // normalize 7->0 and deduplicate
+        raw: parts,
+      };
+    }
+
+    function getNextRuns(parsed, count, tz) {
+      const runs = [];
+      const now = new Date();
+      // Start from next minute
+      let d = new Date(now);
+      d.setSeconds(0, 0);
+      d.setMinutes(d.getMinutes() + 1);
+
+      const maxIter = 525600 * 2; // 2 years of minutes
+      for (let i = 0; i < maxIter && runs.length < count; i++) {
+        const inTz = new Date(d.toLocaleString('en-US', { timeZone: tz }));
+        const min = inTz.getMinutes();
+        const hr = inTz.getHours();
+        const dom = inTz.getDate();
+        const mon = inTz.getMonth() + 1;
+        const dow = inTz.getDay();
+
+        // DOM/DOW union: when both are specified (not *), match is OR per cron standard
+        const domWild = parsed.raw[2] === '*';
+        const dowWild = parsed.raw[4] === '*';
+        const dayMatch = (domWild && dowWild) ? true
+          : (!domWild && !dowWild) ? (parsed.doms.includes(dom) || parsed.dows.includes(dow))
+          : (domWild || parsed.doms.includes(dom)) && (dowWild || parsed.dows.includes(dow));
+
+        if (parsed.months.includes(mon) &&
+            dayMatch &&
+            parsed.hours.includes(hr) &&
+            parsed.minutes.includes(min)) {
+          runs.push(new Date(d));
+        }
+        d.setMinutes(d.getMinutes() + 1);
+      }
+      return runs;
+    }
+
+    // ============ HUMAN DESCRIPTION ============
+    function describeCron(parts) {
+      const [min, hr, dom, mon, dow] = parts;
+      // Common patterns
+      if (min === '*' && hr === '*' && dom === '*' && mon === '*' && dow === '*') return 'Every minute';
+      if (hr === '*' && dom === '*' && mon === '*' && dow === '*' && !min.includes(',') && !min.includes('-') && !min.includes('/')) return `Every hour at minute ${min}`;
+      if (min.startsWith('*/')) return `Every ${min.slice(2)} minutes`;
+      if (hr.startsWith('*/') && min === '0' && dom === '*' && mon === '*' && dow === '*') return `Every ${hr.slice(2)} hours`;
+
+      const isSimple = (v) => /^\d+$/.test(v);
+      const fmtTime = (h, m) => {
+        const hi = parseInt(h), mi = parseInt(m);
+        const ampm = hi >= 12 ? 'PM' : 'AM';
+        const h12 = hi === 0 ? 12 : hi > 12 ? hi - 12 : hi;
+        return `${h12}:${String(mi).padStart(2, '0')} ${ampm}`;
+      };
+      const describeDow = (field) => {
+        return field.split(',').map(part => {
+          if (part.includes('-')) {
+            const [a, b] = part.split('-');
+            return `${DOW_NAMES[parseInt(a)] || a} through ${DOW_NAMES[parseInt(b)] || b}`;
+          }
+          return DOW_NAMES[parseInt(part)] || part;
+        }).join(', ');
+      };
+
+      let desc = '';
+
+      // Time part
+      if (isSimple(min) && isSimple(hr)) {
+        desc += `At ${fmtTime(hr, min)}`;
+      } else if (hr.startsWith('*/')) {
+        desc += `Every ${hr.slice(2)} hours at minute ${min}`;
+      } else if (min !== '*' && hr === '*') {
+        desc += `At minute ${min} of every hour`;
+      } else if (min === '0' && isSimple(hr)) {
+        desc += `At ${fmtTime(hr, '0')}`;
+      } else if (min === '0' && hr.includes(',')) {
+        desc += `At hours ${hr}`;
+      } else if (min === '0' && hr.includes('-')) {
+        desc += `Every hour from ${hr}`;
+      } else {
+        desc += 'Every minute';
+      }
+
+      // DOW
+      if (dow !== '*') {
+        desc += `, on ${describeDow(dow)}`;
+      }
+
+      // DOM
+      if (dom !== '*') {
+        desc += `, on day ${dom} of the month`;
+      }
+
+      // Month
+      if (mon !== '*') {
+        const months = mon.split(',').map(m => MONTH_NAMES[parseInt(m)] || m).join(', ');
+        desc += `, in ${months}`;
+      }
+
+      return desc;
+    }
+
+    // ============ GITHUB ACTIONS VALIDATION ============
+    function validateGitHub(parts) {
+      const warnings = [];
+      // GH Actions: minimum interval is every 5 minutes
+      const [min] = parts;
+      if (min === '*') warnings.push('GitHub Actions treats "* * * * *" as every 5 minutes minimum.');
+      if (min.startsWith('*/')) {
+        const interval = parseInt(min.slice(2));
+        if (interval < 5) warnings.push(`GitHub Actions minimum interval is 5 minutes. "*/\${interval}" will run as */5.`);
+      }
+      // GH Actions doesn't support L, W, #, ? characters
+      const expr = parts.join(' ');
+      if (/[LW#?]/.test(expr)) warnings.push('GitHub Actions cron does not support L, W, #, or ? characters.');
+      // Non-standard extensions
+      if (/@/.test(expr)) warnings.push('GitHub Actions does not support @yearly, @monthly, etc. shortcuts.');
+      return warnings;
+    }
+
+    // ============ TIMEZONE SETUP ============
+    const TIMEZONES = [
+      'UTC',
+      'America/New_York','America/Chicago','America/Denver','America/Los_Angeles',
+      'America/Toronto','America/Vancouver','America/Sao_Paulo','America/Mexico_City',
+      'Europe/London','Europe/Paris','Europe/Berlin','Europe/Amsterdam','Europe/Madrid','Europe/Rome',
+      'Europe/Zurich','Europe/Stockholm','Europe/Warsaw','Europe/Moscow',
+      'Asia/Tokyo','Asia/Shanghai','Asia/Hong_Kong','Asia/Singapore','Asia/Seoul',
+      'Asia/Kolkata','Asia/Dubai','Asia/Bangkok',
+      'Australia/Sydney','Australia/Melbourne','Pacific/Auckland',
+      'Africa/Cairo','Africa/Lagos','Africa/Johannesburg',
+    ];
+
+    const tzSelect = document.getElementById('tzSelect');
+    const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    TIMEZONES.forEach(tz => {
+      const opt = document.createElement('option');
+      opt.value = tz;
+      opt.textContent = tz.replace(/_/g, ' ');
+      if (tz === localTz) opt.selected = true;
+      tzSelect.appendChild(opt);
+    });
+    if (!TIMEZONES.includes(localTz)) {
+      const opt = document.createElement('option');
+      opt.value = localTz;
+      opt.textContent = localTz.replace(/_/g, ' ') + ' (local)';
+      opt.selected = true;
+      tzSelect.prepend(opt);
+    }
+
+    // ============ VISUAL BUILDER SETUP ============
+    function populateSelect(id, options) {
+      const sel = document.getElementById(id);
+      options.forEach(([val, label]) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        sel.appendChild(opt);
+      });
+    }
+
+    const minuteOpts = [['*', 'Every (*)'], ['0', '0'], ['*/5', 'Every 5'], ['*/10', 'Every 10'], ['*/15', 'Every 15'], ['*/30', 'Every 30']];
+    for (let i = 1; i <= 59; i++) if (![5,10,15,30].includes(i)) minuteOpts.push([String(i), String(i)]);
+    populateSelect('fMinute', minuteOpts);
+
+    const hourOpts = [['*', 'Every (*)']];
+    for (let i = 0; i <= 23; i++) {
+      const ampm = i >= 12 ? 'PM' : 'AM';
+      const h12 = i === 0 ? 12 : i > 12 ? i - 12 : i;
+      hourOpts.push([String(i), `${h12} ${ampm} (${i})`]);
+    }
+    populateSelect('fHour', hourOpts);
+
+    const domOpts = [['*', 'Every (*)']];
+    for (let i = 1; i <= 31; i++) domOpts.push([String(i), String(i)]);
+    populateSelect('fDom', domOpts);
+
+    const monthOpts = [['*', 'Every (*)']];
+    for (let i = 1; i <= 12; i++) monthOpts.push([String(i), MONTH_NAMES[i] + ` (${i})`]);
+    populateSelect('fMonth', monthOpts);
+
+    const dowOpts = [['*', 'Every (*)']];
+    DOW_NAMES.forEach((name, i) => dowOpts.push([String(i), name + ` (${i})`]));
+    populateSelect('fDow', dowOpts);
+
+    // ============ PRESETS ============
+    const PRESETS = [
+      { label: 'Every minute', cron: '* * * * *' },
+      { label: 'Every 5 min', cron: '*/5 * * * *' },
+      { label: 'Every 15 min', cron: '*/15 * * * *' },
+      { label: 'Every hour', cron: '0 * * * *' },
+      { label: 'Every 6 hours', cron: '0 */6 * * *' },
+      { label: 'Daily midnight', cron: '0 0 * * *' },
+      { label: 'Daily 9 AM', cron: '0 9 * * *' },
+      { label: 'Weekly Monday 9 AM', cron: '0 9 * * 1' },
+      { label: 'Monthly 1st', cron: '0 0 1 * *' },
+      { label: 'Weekdays 9 AM', cron: '0 9 * * 1-5' },
+      { label: 'Quarterly', cron: '0 0 1 1,4,7,10 *' },
+      { label: 'Yearly Jan 1', cron: '0 0 1 1 *' },
+    ];
+
+    const presetsContainer = document.getElementById('presets');
+    PRESETS.forEach(p => {
+      const btn = document.createElement('button');
+      btn.className = 'px-3 py-1.5 text-xs rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition border border-gray-700 hover:border-emerald-500/30';
+      btn.textContent = p.label;
+      btn.addEventListener('click', () => setCron(p.cron));
+      presetsContainer.appendChild(btn);
+    });
+
+    // ============ EXAMPLES ============
+    const EXAMPLES = [
+      { cron: '* * * * *', desc: 'Every minute' },
+      { cron: '*/5 * * * *', desc: 'Every 5 minutes' },
+      { cron: '0 * * * *', desc: 'Every hour' },
+      { cron: '0 0 * * *', desc: 'Daily at midnight' },
+      { cron: '0 9 * * 1-5', desc: 'Weekdays at 9 AM' },
+      { cron: '0 9 * * 1', desc: 'Every Monday at 9 AM' },
+      { cron: '30 2 * * *', desc: 'Daily at 2:30 AM' },
+      { cron: '0 0 1 * *', desc: '1st of every month' },
+      { cron: '0 0 * * 0', desc: 'Every Sunday at midnight' },
+      { cron: '0 6,18 * * *', desc: 'At 6 AM and 6 PM' },
+      { cron: '0 0 1 1 *', desc: 'Yearly on Jan 1st' },
+      { cron: '*/10 * * * *', desc: 'Every 10 minutes' },
+      { cron: '0 0 15 * *', desc: '15th of every month' },
+      { cron: '0 22 * * 5', desc: 'Friday at 10 PM' },
+    ];
+
+    const examplesContainer = document.getElementById('examples');
+    EXAMPLES.forEach(ex => {
+      const btn = document.createElement('button');
+      btn.className = 'w-full text-left p-3 rounded-lg bg-gray-900 border border-gray-700 hover:border-emerald-500/30 hover:bg-gray-800 transition group';
+      btn.innerHTML = `<code class="text-emerald-400 text-xs font-mono">${ex.cron}</code><div class="text-gray-400 text-xs mt-0.5">${ex.desc}</div>`;
+      btn.addEventListener('click', () => setCron(ex.cron));
+      examplesContainer.appendChild(btn);
+    });
+
+    // ============ MAIN LOGIC ============
+    const cronInput = document.getElementById('cronInput');
+    const descEl = document.getElementById('description');
+    const errorBox = document.getElementById('errorBox');
+    const nextRunsEl = document.getElementById('nextRuns');
+    const ghToggle = document.getElementById('ghToggle');
+    const ghWarning = document.getElementById('ghWarning');
+    const ghWarningText = document.getElementById('ghWarningText');
+
+    let updatingFromBuilder = false;
+    let updatingFromInput = false;
+
+    function setCron(expr) {
+      cronInput.value = expr;
+      syncBuilderFromInput();
+      render();
+    }
+
+    function syncBuilderFromInput() {
+      updatingFromBuilder = true;
+      const parts = cronInput.value.trim().split(/\s+/);
+      if (parts.length === 5) {
+        const ids = ['fMinute','fHour','fDom','fMonth','fDow'];
+        parts.forEach((val, i) => {
+          const sel = document.getElementById(ids[i]);
+          // Find matching option or set to *
+          const opt = [...sel.options].find(o => o.value === val);
+          if (opt) sel.value = val;
+          else sel.value = '*';
+        });
+      }
+      updatingFromBuilder = false;
+    }
+
+    function syncInputFromBuilder() {
+      if (updatingFromBuilder) return;
+      updatingFromInput = true;
+      const parts = ['fMinute','fHour','fDom','fMonth','fDow'].map(id => document.getElementById(id).value);
+      cronInput.value = parts.join(' ');
+      updatingFromInput = false;
+      render();
+    }
+
+    function render() {
+      errorBox.classList.add('hidden');
+      ghWarning.classList.add('hidden');
+      const expr = cronInput.value.trim();
+      if (!expr) {
+        descEl.textContent = 'Enter a cron expression above';
+        nextRunsEl.innerHTML = '<span class="text-gray-600">No expression to evaluate</span>';
+        return;
+      }
+
+      const parts = expr.split(/\s+/);
+
+      // GitHub Actions check
+      if (ghToggle.checked) {
+        const warnings = validateGitHub(parts);
+        if (warnings.length) {
+          ghWarning.classList.remove('hidden');
+          ghWarningText.textContent = warnings.join(' ');
+        }
+      }
+
+      try {
+        const parsed = parseCron(expr);
+        descEl.textContent = describeCron(parts);
+
+        // Deduplicate DOWs after normalization
+        parsed.dows = [...new Set(parsed.dows)].sort((a,b) => a-b);
+
+        const tz = tzSelect.value;
+        const runs = getNextRuns(parsed, 10, tz);
+        if (runs.length === 0) {
+          nextRunsEl.innerHTML = '<span class="text-gray-500">No upcoming runs found in the next 2 years</span>';
+        } else {
+          const fmt = new Intl.DateTimeFormat('en-US', {
+            timeZone: tz,
+            weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: true,
+          });
+          nextRunsEl.innerHTML = runs.map((r, i) =>
+            `<div class="flex gap-3"><span class="text-gray-600 w-5 text-right">${i + 1}.</span><span>${fmt.format(r)}</span></div>`
+          ).join('');
+        }
+      } catch (err) {
+        errorBox.classList.remove('hidden');
+        const esc = (s) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        errorBox.innerHTML = `<strong>Invalid expression</strong> — ${esc(err.message)}`;
+        descEl.textContent = '—';
+        nextRunsEl.innerHTML = '<span class="text-gray-500">Fix the expression to see run times</span>';
+      }
+    }
+
+    // Events
+    cronInput.addEventListener('input', () => {
+      if (!updatingFromInput) syncBuilderFromInput();
+      render();
+    });
+
+    ['fMinute','fHour','fDom','fMonth','fDow'].forEach(id => {
+      document.getElementById(id).addEventListener('change', syncInputFromBuilder);
+    });
+
+    tzSelect.addEventListener('change', render);
+    ghToggle.addEventListener('change', render);
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      navigator.clipboard.writeText(cronInput.value.trim()).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy Expression', 1500);
+      });
+    });
+
+    // Init
+    syncBuilderFromInput();
+    render();
+  </script>
+</Layout>
