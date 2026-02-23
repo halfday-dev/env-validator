@@ -129,7 +129,7 @@ import Layout from '../../layouts/Layout.astro';
         hours: parseField(parts[1], 0, 23),
         doms: parseField(parts[2], 1, 31),
         months: parseField(parts[3], 1, 12),
-        dows: parseField(parts[4], 0, 7).map(d => d === 7 ? 0 : d), // normalize 7->0
+        dows: [...new Set(parseField(parts[4], 0, 7).map(d => d === 7 ? 0 : d))], // normalize 7->0 and deduplicate
         raw: parts,
       };
     }
@@ -151,9 +151,15 @@ import Layout from '../../layouts/Layout.astro';
         const mon = inTz.getMonth() + 1;
         const dow = inTz.getDay();
 
+        // DOM/DOW union: when both are specified (not *), match is OR per cron standard
+        const domWild = parsed.raw[2] === '*';
+        const dowWild = parsed.raw[4] === '*';
+        const dayMatch = (domWild && dowWild) ? true
+          : (!domWild && !dowWild) ? (parsed.doms.includes(dom) || parsed.dows.includes(dow))
+          : (domWild || parsed.doms.includes(dom)) && (dowWild || parsed.dows.includes(dow));
+
         if (parsed.months.includes(mon) &&
-            parsed.doms.includes(dom) &&
-            parsed.dows.includes(dow) &&
+            dayMatch &&
             parsed.hours.includes(hr) &&
             parsed.minutes.includes(min)) {
           runs.push(new Date(d));
@@ -172,36 +178,45 @@ import Layout from '../../layouts/Layout.astro';
       if (min.startsWith('*/')) return `Every ${min.slice(2)} minutes`;
       if (hr.startsWith('*/') && min === '0' && dom === '*' && mon === '*' && dow === '*') return `Every ${hr.slice(2)} hours`;
 
+      const isSimple = (v) => /^\d+$/.test(v);
+      const fmtTime = (h, m) => {
+        const hi = parseInt(h), mi = parseInt(m);
+        const ampm = hi >= 12 ? 'PM' : 'AM';
+        const h12 = hi === 0 ? 12 : hi > 12 ? hi - 12 : hi;
+        return `${h12}:${String(mi).padStart(2, '0')} ${ampm}`;
+      };
+      const describeDow = (field) => {
+        return field.split(',').map(part => {
+          if (part.includes('-')) {
+            const [a, b] = part.split('-');
+            return `${DOW_NAMES[parseInt(a)] || a} through ${DOW_NAMES[parseInt(b)] || b}`;
+          }
+          return DOW_NAMES[parseInt(part)] || part;
+        }).join(', ');
+      };
+
       let desc = '';
 
       // Time part
-      if (min !== '*' && hr !== '*' && !min.includes('/') && !hr.includes('/') && !min.includes(',') && !hr.includes(',')) {
-        const h = parseInt(hr);
-        const m = parseInt(min);
-        const ampm = h >= 12 ? 'PM' : 'AM';
-        const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-        desc += `At ${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+      if (isSimple(min) && isSimple(hr)) {
+        desc += `At ${fmtTime(hr, min)}`;
+      } else if (hr.startsWith('*/')) {
+        desc += `Every ${hr.slice(2)} hours at minute ${min}`;
       } else if (min !== '*' && hr === '*') {
         desc += `At minute ${min} of every hour`;
-      } else if (min === '0' && hr !== '*') {
-        if (hr.includes(',')) {
-          desc += `At hours ${hr}`;
-        } else if (hr.includes('-')) {
-          desc += `Every hour from ${hr}`;
-        } else {
-          const h = parseInt(hr);
-          const ampm = h >= 12 ? 'PM' : 'AM';
-          const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-          desc += `At ${h12}:00 ${ampm}`;
-        }
+      } else if (min === '0' && isSimple(hr)) {
+        desc += `At ${fmtTime(hr, '0')}`;
+      } else if (min === '0' && hr.includes(',')) {
+        desc += `At hours ${hr}`;
+      } else if (min === '0' && hr.includes('-')) {
+        desc += `Every hour from ${hr}`;
       } else {
         desc += 'Every minute';
       }
 
       // DOW
       if (dow !== '*') {
-        const days = dow.split(',').map(d => DOW_NAMES[parseInt(d)] || d).join(', ');
-        desc += `, on ${days}`;
+        desc += `, on ${describeDow(dow)}`;
       }
 
       // DOM
@@ -440,7 +455,8 @@ import Layout from '../../layouts/Layout.astro';
         }
       } catch (err) {
         errorBox.classList.remove('hidden');
-        errorBox.innerHTML = `<strong>Invalid expression</strong> — ${err.message}`;
+        const esc = (s) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        errorBox.innerHTML = `<strong>Invalid expression</strong> — ${esc(err.message)}`;
         descEl.textContent = '—';
         nextRunsEl.innerHTML = '<span class="text-gray-500">Fix the expression to see run times</span>';
       }
