@@ -1,0 +1,272 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="Base64 Encode & Decode — Free Online Tool | Halfday" description="Encode and decode Base64, URL encoding, HTML entities, Hex, and Unicode escape sequences online. Auto-detect encoded input, secret detection. 100% client-side — your data never leaves your browser.">
+  <div class="max-w-6xl mx-auto w-full">
+    <!-- Trust Banner -->
+    <div class="mb-6 flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3 text-emerald-400 text-sm">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      <span><strong>Your data never leaves your browser.</strong> All encoding and decoding runs 100% client-side. No data is sent to any server.</span>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-2">Encode / Decode Hub</h1>
+    <p class="text-gray-400 mb-6">Convert between Base64, URL encoding, HTML entities, Hex, and Unicode escapes.</p>
+
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-1 mb-4 border-b border-gray-700 pb-px" id="tabBar">
+      <button class="enc-tab px-3 py-1.5 text-sm rounded-t-md font-medium transition border-b-2 border-emerald-400 text-emerald-400 bg-emerald-500/10" data-tab="base64">Base64</button>
+      <button class="enc-tab px-3 py-1.5 text-sm rounded-t-md font-medium transition border-b-2 border-transparent text-gray-400 hover:text-gray-200" data-tab="url">URL</button>
+      <button class="enc-tab px-3 py-1.5 text-sm rounded-t-md font-medium transition border-b-2 border-transparent text-gray-400 hover:text-gray-200" data-tab="html">HTML Entities</button>
+      <button class="enc-tab px-3 py-1.5 text-sm rounded-t-md font-medium transition border-b-2 border-transparent text-gray-400 hover:text-gray-200" data-tab="hex">Hex</button>
+      <button class="enc-tab px-3 py-1.5 text-sm rounded-t-md font-medium transition border-b-2 border-transparent text-gray-400 hover:text-gray-200" data-tab="unicode">Unicode</button>
+    </div>
+
+    <!-- Auto-detect hint -->
+    <div id="autoDetect" class="hidden mb-4 flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-2.5 text-blue-400 text-sm">
+      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span id="autoDetectText"></span>
+    </div>
+
+    <!-- Secret warning -->
+    <div id="secretWarning" class="hidden mb-4 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+        <span class="text-sm text-amber-400"><strong>Potential secret detected!</strong> The content may contain API keys, tokens, or passwords. Be careful sharing the output.</span>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="mb-4">
+      <label class="text-xs text-gray-500 uppercase tracking-wider mb-2 block">Input</label>
+      <textarea id="encInput" class="w-full h-44 bg-gray-900 border border-gray-700 rounded-lg p-4 font-mono text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-y placeholder-gray-600" placeholder="Paste or type text to encode or decode..."></textarea>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="flex flex-wrap items-center gap-2 mb-4">
+      <button id="encodeBtn" class="px-4 py-2 text-sm rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition">Encode ↓</button>
+      <button id="decodeBtn" class="px-4 py-2 text-sm rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium transition">Decode ↓</button>
+      <button id="swapBtn" class="px-3 py-2 text-sm rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition" title="Swap output to input">⇅ Swap</button>
+      <button id="clearBtn" class="px-3 py-2 text-sm rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition ml-auto">Clear</button>
+    </div>
+
+    <!-- Error -->
+    <div id="errorBox" class="hidden mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm"></div>
+
+    <!-- Output -->
+    <div class="mb-4">
+      <div class="flex items-center justify-between mb-2">
+        <label class="text-xs text-gray-500 uppercase tracking-wider">Output</label>
+        <button id="copyBtn" class="px-3 py-1 text-xs rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Copy</button>
+      </div>
+      <textarea id="encOutput" readonly class="w-full h-44 bg-gray-900 border border-gray-700 rounded-lg p-4 font-mono text-sm text-gray-200 focus:outline-none resize-y" placeholder="Output will appear here..."></textarea>
+    </div>
+
+    <!-- Info panel per tab -->
+    <div id="infoPanel" class="p-4 rounded-lg bg-gray-900 border border-gray-700 text-sm text-gray-400">
+      <div id="infoBase64" class="info-content"><strong class="text-gray-300">Base64</strong> encodes binary data as ASCII text using A-Z, a-z, 0-9, +, and /. Common for embedding images, data URIs, and HTTP auth headers. This tool handles UTF-8 correctly.</div>
+      <div id="infoUrl" class="info-content hidden"><strong class="text-gray-300">URL Encoding</strong> (percent-encoding) replaces unsafe characters with <code class="text-emerald-400">%XX</code> hex codes. Used in query strings, form data, and URIs. Uses <code class="text-emerald-400">encodeURIComponent</code>/<code class="text-emerald-400">decodeURIComponent</code>.</div>
+      <div id="infoHtml" class="info-content hidden"><strong class="text-gray-300">HTML Entities</strong> encode special characters like <code class="text-emerald-400">&lt;</code>, <code class="text-emerald-400">&gt;</code>, <code class="text-emerald-400">&amp;</code>, <code class="text-emerald-400">&quot;</code>, and <code class="text-emerald-400">&#39;</code> to prevent XSS and rendering issues.</div>
+      <div id="infoHex" class="info-content hidden"><strong class="text-gray-300">Hex encoding</strong> converts each byte to its two-digit hexadecimal representation. Common in cryptography, color codes, and low-level debugging.</div>
+      <div id="infoUnicode" class="info-content hidden"><strong class="text-gray-300">Unicode Escape</strong> converts characters to <code class="text-emerald-400">\uXXXX</code> sequences. Used in JSON, JavaScript strings, and internationalization work.</div>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById('encInput');
+    const output = document.getElementById('encOutput');
+    const errorBox = document.getElementById('errorBox');
+    const autoDetect = document.getElementById('autoDetect');
+    const autoDetectText = document.getElementById('autoDetectText');
+    const secretWarning = document.getElementById('secretWarning');
+
+    let activeTab = 'base64';
+
+    // --- Secret patterns (reused from JSON formatter) ---
+    const SECRET_PATTERNS = [
+      /AKIA[0-9A-Z]{16}/,
+      /gh[pousr]_[A-Za-z0-9_]{36,}/,
+      /github_pat_[A-Za-z0-9_]{22,}/,
+      /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/,
+      /-----BEGIN\s+(RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----/,
+      /xox[bpas]-[0-9a-zA-Z-]{10,}/,
+      /sk_live_[0-9a-zA-Z]{24,}/,
+      /AIzaSy[A-Za-z0-9_-]{33}/,
+      /SK[a-f0-9]{32}/,
+      /SG\.[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}/,
+      /(postgres|mysql|mongodb|redis):\/\/[^:]+:[^@]+@/,
+      /\b(api[_-]?key|password|secret|token)\s*[:=]\s*\S{6,}/i,
+    ];
+
+    function checkSecrets(text) {
+      if (!text) return false;
+      return SECRET_PATTERNS.some(p => p.test(text));
+    }
+
+    function showSecret(text) {
+      const has = checkSecrets(text);
+      secretWarning.classList.toggle('hidden', !has);
+      return has;
+    }
+
+    // --- Tab switching ---
+    document.querySelectorAll('.enc-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.enc-tab').forEach(b => {
+          b.classList.remove('border-emerald-400', 'text-emerald-400', 'bg-emerald-500/10');
+          b.classList.add('border-transparent', 'text-gray-400');
+        });
+        btn.classList.remove('border-transparent', 'text-gray-400');
+        btn.classList.add('border-emerald-400', 'text-emerald-400', 'bg-emerald-500/10');
+        activeTab = btn.dataset.tab;
+        document.querySelectorAll('.info-content').forEach(c => c.classList.add('hidden'));
+        const infoId = 'info' + activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
+        const el = document.getElementById(infoId);
+        if (el) el.classList.remove('hidden');
+        detectInput();
+      });
+    });
+
+    // --- Encoders/Decoders ---
+    const codecs = {
+      base64: {
+        encode: (s) => btoa(unescape(encodeURIComponent(s))),
+        decode: (s) => decodeURIComponent(escape(atob(s.trim()))),
+        detect: (s) => {
+          s = s.trim();
+          if (s.length < 4) return false;
+          if (!/^[A-Za-z0-9+/\n\r]+=*$/.test(s)) return false;
+          try { atob(s); return true; } catch { return false; }
+        },
+        detectLabel: 'Input looks like Base64 — try Decode',
+      },
+      url: {
+        encode: (s) => encodeURIComponent(s),
+        decode: (s) => decodeURIComponent(s.trim()),
+        detect: (s) => /%[0-9A-Fa-f]{2}/.test(s),
+        detectLabel: 'Input contains percent-encoded characters — try Decode',
+      },
+      html: {
+        encode: (s) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'),
+        decode: (s) => {
+          const el = document.createElement('textarea');
+          el.innerHTML = s;
+          return el.value;
+        },
+        detect: (s) => /&(?:amp|lt|gt|quot|#39|#\d+|#x[0-9a-fA-F]+);/.test(s),
+        detectLabel: 'Input contains HTML entities — try Decode',
+      },
+      hex: {
+        encode: (s) => Array.from(new TextEncoder().encode(s)).map(b => b.toString(16).padStart(2, '0')).join(''),
+        decode: (s) => {
+          const clean = s.trim().replace(/\s+/g, '').replace(/^0x/i, '');
+          if (!/^[0-9a-fA-F]*$/.test(clean) || clean.length % 2 !== 0) throw new Error('Invalid hex string');
+          const bytes = new Uint8Array(clean.length / 2);
+          for (let i = 0; i < clean.length; i += 2) bytes[i/2] = parseInt(clean.substr(i, 2), 16);
+          return new TextDecoder().decode(bytes);
+        },
+        detect: (s) => {
+          const clean = s.trim().replace(/^0x/i, '');
+          return /^[0-9a-fA-F]{8,}$/.test(clean) && clean.length % 2 === 0;
+        },
+        detectLabel: 'Input looks like a hex string — try Decode',
+      },
+      unicode: {
+        encode: (s) => Array.from(s).map(c => {
+          const code = c.codePointAt(0);
+          if (code > 0xFFFF) {
+            const hi = Math.floor((code - 0x10000) / 0x400) + 0xD800;
+            const lo = (code - 0x10000) % 0x400 + 0xDC00;
+            return '\\u' + hi.toString(16).padStart(4, '0') + '\\u' + lo.toString(16).padStart(4, '0');
+          }
+          return '\\u' + code.toString(16).padStart(4, '0');
+        }).join(''),
+        decode: (s) => s.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16))),
+        detect: (s) => /\\u[0-9a-fA-F]{4}/.test(s),
+        detectLabel: 'Input contains \\uXXXX sequences — try Decode',
+      },
+    };
+
+    // --- Auto-detect ---
+    function detectInput() {
+      const val = input.value;
+      autoDetect.classList.add('hidden');
+      if (!val.trim()) return;
+      const codec = codecs[activeTab];
+      if (codec.detect(val)) {
+        autoDetect.classList.remove('hidden');
+        autoDetectText.textContent = codec.detectLabel;
+      }
+    }
+
+    let debounce;
+    input.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(detectInput, 200);
+    });
+
+    // --- Actions ---
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.classList.remove('hidden');
+    }
+
+    function clearError() {
+      errorBox.classList.add('hidden');
+    }
+
+    document.getElementById('encodeBtn').addEventListener('click', () => {
+      clearError();
+      const val = input.value;
+      if (!val) return;
+      try {
+        const result = codecs[activeTab].encode(val);
+        output.value = result;
+        showSecret(val);
+        showSecret(result);
+      } catch (e) {
+        showError('Encode error: ' + e.message);
+      }
+    });
+
+    document.getElementById('decodeBtn').addEventListener('click', () => {
+      clearError();
+      const val = input.value;
+      if (!val) return;
+      try {
+        const result = codecs[activeTab].decode(val);
+        output.value = result;
+        showSecret(result);
+      } catch (e) {
+        showError('Decode error: ' + e.message);
+      }
+    });
+
+    document.getElementById('swapBtn').addEventListener('click', () => {
+      const val = output.value;
+      if (!val) return;
+      input.value = val;
+      output.value = '';
+      clearError();
+      secretWarning.classList.add('hidden');
+      detectInput();
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      input.value = '';
+      output.value = '';
+      clearError();
+      autoDetect.classList.add('hidden');
+      secretWarning.classList.add('hidden');
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const text = output.value;
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+      });
+    });
+  </script>
+</Layout>
