@@ -1,0 +1,393 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="JSON Formatter & Validator — Free Online Tool | Halfday" description="Format, beautify, minify, and validate JSON online. Collapsible tree view, secret detection for API keys and tokens. 100% client-side — your data never leaves your browser.">
+  <div class="max-w-6xl mx-auto w-full">
+    <!-- Trust Banner -->
+    <div class="mb-6 flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3 text-emerald-400 text-sm">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      <span><strong>Your data never leaves your browser.</strong> All formatting and validation runs 100% client-side. No data is sent to any server.</span>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-2">JSON Formatter & Validator</h1>
+    <p class="text-gray-400 mb-6">Paste JSON to format, validate, explore as a tree, and detect leaked secrets.</p>
+
+    <!-- Controls -->
+    <div class="flex flex-wrap items-center gap-2 mb-4">
+      <button id="formatBtn" class="px-3 py-1.5 text-sm rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition">Format</button>
+      <button id="minifyBtn" class="px-3 py-1.5 text-sm rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Minify</button>
+      <div class="flex items-center gap-1 ml-2">
+        <label class="text-xs text-gray-500">Indent:</label>
+        <select id="indentSelect" class="text-sm bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+          <option value="2" selected>2 spaces</option>
+          <option value="4">4 spaces</option>
+          <option value="tab">Tab</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-1 ml-auto">
+        <button id="copyBtn" class="px-3 py-1.5 text-sm rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Copy</button>
+        <button id="downloadBtn" class="px-3 py-1.5 text-sm rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Download</button>
+        <button id="clearBtn" class="px-3 py-1.5 text-sm rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Clear</button>
+        <button id="sampleBtn" class="px-3 py-1.5 text-sm rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Sample</button>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div id="statusBar" class="hidden mb-4 flex flex-wrap items-center gap-3">
+      <div id="statusValid" class="text-sm px-3 py-1.5 rounded-full"></div>
+      <div id="statusSize" class="text-sm px-3 py-1.5 rounded-full bg-gray-800 border border-gray-700 text-gray-300"></div>
+      <div id="statusSecrets" class="text-sm px-3 py-1.5 rounded-full hidden"></div>
+    </div>
+
+    <!-- Error display -->
+    <div id="errorBox" class="hidden mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-mono"></div>
+
+    <!-- Secret warnings -->
+    <div id="secretWarnings" class="hidden mb-4 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+      <div class="flex items-center gap-2 mb-2">
+        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+        <h3 class="text-sm font-semibold text-amber-400">Potential Secrets Detected</h3>
+      </div>
+      <div id="secretList" class="space-y-1.5"></div>
+    </div>
+
+    <!-- Main panels -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Input -->
+      <div>
+        <label class="text-xs text-gray-500 uppercase tracking-wider mb-2 block">Input</label>
+        <textarea id="jsonInput" class="w-full h-96 bg-gray-900 border border-gray-700 rounded-lg p-4 font-mono text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-y placeholder-gray-600" placeholder='Paste your JSON here...
+
+{
+  "example": "value",
+  "nested": {
+    "key": 123
+  }
+}'></textarea>
+      </div>
+
+      <!-- Output tabs -->
+      <div>
+        <div class="flex items-center gap-4 mb-2">
+          <button id="tabFormatted" class="tab-btn text-xs uppercase tracking-wider pb-1 border-b-2 border-emerald-400 text-emerald-400 transition" data-tab="formatted">Formatted</button>
+          <button id="tabTree" class="tab-btn text-xs uppercase tracking-wider pb-1 border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition" data-tab="tree">Tree View</button>
+        </div>
+        <div id="panelFormatted" class="tab-panel">
+          <pre id="formattedOutput" class="w-full h-96 bg-gray-900 border border-gray-700 rounded-lg p-4 font-mono text-sm text-gray-200 overflow-auto whitespace-pre"></pre>
+        </div>
+        <div id="panelTree" class="tab-panel hidden">
+          <div id="treeOutput" class="w-full h-96 bg-gray-900 border border-gray-700 rounded-lg p-4 font-mono text-sm text-gray-200 overflow-auto"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById('jsonInput');
+    const formattedOutput = document.getElementById('formattedOutput');
+    const treeOutput = document.getElementById('treeOutput');
+    const errorBox = document.getElementById('errorBox');
+    const statusBar = document.getElementById('statusBar');
+    const secretWarnings = document.getElementById('secretWarnings');
+    const secretList = document.getElementById('secretList');
+
+    // --- Tabs ---
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('border-emerald-400', 'text-emerald-400');
+          b.classList.add('border-transparent', 'text-gray-500');
+        });
+        btn.classList.remove('border-transparent', 'text-gray-500');
+        btn.classList.add('border-emerald-400', 'text-emerald-400');
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        document.getElementById('panel' + btn.dataset.tab.charAt(0).toUpperCase() + btn.dataset.tab.slice(1)).classList.remove('hidden');
+      });
+    });
+
+    // --- Secret detection ---
+    const SECRET_PATTERNS = [
+      { name: 'AWS Access Key ID', pattern: /AKIA[0-9A-Z]{16}/ },
+      { name: 'AWS Secret Key', pattern: /[A-Za-z0-9/+=]{40}/, keyMatch: /aws[_-]?secret|secret[_-]?access/i },
+      { name: 'GitHub Token', pattern: /gh[pousr]_[A-Za-z0-9_]{36,}/ },
+      { name: 'GitHub PAT', pattern: /github_pat_[A-Za-z0-9_]{22,}/ },
+      { name: 'JWT', pattern: /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/ },
+      { name: 'Private Key', pattern: /-----BEGIN\s+(RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----/ },
+      { name: 'Slack Token', pattern: /xox[bpas]-[0-9a-zA-Z-]{10,}/ },
+      { name: 'Stripe Secret Key', pattern: /sk_live_[0-9a-zA-Z]{24,}/ },
+      { name: 'Stripe Publishable Key', pattern: /pk_live_[0-9a-zA-Z]{24,}/ },
+    ];
+
+    const SENSITIVE_KEY_NAMES = /^(api[_-]?key|apikey|secret|token|password|passwd|credential|auth[_-]?token|access[_-]?token|private[_-]?key|secret[_-]?key|api[_-]?secret)$/i;
+
+    function detectSecrets(obj, path = '') {
+      const findings = [];
+      if (obj === null || obj === undefined) return findings;
+      if (typeof obj === 'string') {
+        for (const s of SECRET_PATTERNS) {
+          if (s.keyMatch) continue; // key-dependent patterns checked below
+          if (s.pattern.test(obj)) {
+            findings.push({ path, type: s.name, value: obj.length > 40 ? obj.slice(0, 20) + '...' + obj.slice(-10) : obj });
+          }
+        }
+        return findings;
+      }
+      if (Array.isArray(obj)) {
+        obj.forEach((item, i) => findings.push(...detectSecrets(item, `${path}[${i}]`)));
+        return findings;
+      }
+      if (typeof obj === 'object') {
+        for (const [key, val] of Object.entries(obj)) {
+          const p = path ? `${path}.${key}` : key;
+          if (typeof val === 'string') {
+            // Check value patterns
+            for (const s of SECRET_PATTERNS) {
+              if (s.keyMatch) {
+                if (s.keyMatch.test(key) && s.pattern.test(val)) {
+                  findings.push({ path: p, type: s.name, value: val.length > 40 ? val.slice(0, 20) + '...' + val.slice(-10) : val });
+                }
+              } else if (s.pattern.test(val)) {
+                findings.push({ path: p, type: s.name, value: val.length > 40 ? val.slice(0, 20) + '...' + val.slice(-10) : val });
+              }
+            }
+            // Check sensitive key names
+            if (SENSITIVE_KEY_NAMES.test(key) && val.length > 3) {
+              const alreadyFound = findings.some(f => f.path === p);
+              if (!alreadyFound) {
+                findings.push({ path: p, type: `Sensitive key name "${key}"`, value: val.length > 40 ? val.slice(0, 20) + '...' + val.slice(-10) : val });
+              }
+            }
+          } else {
+            findings.push(...detectSecrets(val, p));
+          }
+        }
+      }
+      return findings;
+    }
+
+    // --- Tree view ---
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function buildTree(data, key = null, depth = 0) {
+      const isObj = data !== null && typeof data === 'object' && !Array.isArray(data);
+      const isArr = Array.isArray(data);
+      const indent = '  '.repeat(depth);
+      const keyPart = key !== null ? `<span class="text-gray-400">${escapeHtml(key)}</span>: ` : '';
+
+      if (isObj || isArr) {
+        const count = isArr ? data.length : Object.keys(data).length;
+        const bracket = isArr ? ['[', ']'] : ['{', '}'];
+        const label = isArr ? `Array(${count})` : `Object{${count}}`;
+        const id = 'tn' + Math.random().toString(36).slice(2, 8);
+        let html = `${indent}<span class="tree-toggle cursor-pointer select-none" data-target="${id}"><span class="tree-arrow text-gray-600 inline-block w-4 text-center">▶</span>${keyPart}<span class="text-gray-500 text-xs">${label}</span></span>\n`;
+        html += `<span id="${id}" class="hidden">`;
+        const entries = isArr ? data.map((v, i) => [i, v]) : Object.entries(data);
+        for (const [k, v] of entries) {
+          html += buildTree(v, k, depth + 1);
+        }
+        html += `${indent}</span>`;
+        return html;
+      }
+
+      // Primitives
+      let valHtml;
+      if (typeof data === 'string') {
+        valHtml = `<span class="text-amber-300">"${escapeHtml(data)}"</span>`;
+      } else if (typeof data === 'number') {
+        valHtml = `<span class="text-purple-400">${data}</span>`;
+      } else if (typeof data === 'boolean') {
+        valHtml = `<span class="text-blue-400">${data}</span>`;
+      } else {
+        valHtml = `<span class="text-gray-500">null</span>`;
+      }
+      return `${indent}<span class="tree-arrow inline-block w-4"></span>${keyPart}${valHtml}\n`;
+    }
+
+    // --- Syntax highlight ---
+    function highlight(json) {
+      return json
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"([^"\\]*(\\.[^"\\]*)*)"\s*:/g, '<span class="text-gray-400">"$1"</span>:')
+        .replace(/:\s*"([^"\\]*(\\.[^"\\]*)*)"/g, ': <span class="text-amber-300">"$1"</span>')
+        .replace(/:\s*(\d+\.?\d*)/g, ': <span class="text-purple-400">$1</span>')
+        .replace(/:\s*(true|false)/g, ': <span class="text-blue-400">$1</span>')
+        .replace(/:\s*(null)/g, ': <span class="text-gray-500">$1</span>');
+    }
+
+    // --- Get indent ---
+    function getIndent() {
+      const v = document.getElementById('indentSelect').value;
+      return v === 'tab' ? '\t' : Number(v);
+    }
+
+    // --- Core render ---
+    function render(raw) {
+      errorBox.classList.add('hidden');
+      secretWarnings.classList.add('hidden');
+      statusBar.classList.add('hidden');
+
+      if (!raw.trim()) {
+        formattedOutput.innerHTML = '';
+        treeOutput.innerHTML = '<span class="text-gray-600">Paste JSON to see a tree view</span>';
+        return;
+      }
+
+      let parsed;
+      try {
+        parsed = JSON.parse(raw);
+      } catch (err) {
+        errorBox.classList.remove('hidden');
+        // Try to get line/col info
+        const match = err.message.match(/position\s+(\d+)/i);
+        if (match) {
+          const pos = parseInt(match[1]);
+          const before = raw.slice(0, pos);
+          const line = (before.match(/\n/g) || []).length + 1;
+          const col = pos - before.lastIndexOf('\n');
+          errorBox.innerHTML = `<strong>Invalid JSON</strong> — Error at line ${line}, column ${col}:<br>${escapeHtml(err.message)}`;
+        } else {
+          errorBox.innerHTML = `<strong>Invalid JSON</strong> — ${escapeHtml(err.message)}`;
+        }
+        formattedOutput.innerHTML = '';
+        treeOutput.innerHTML = '';
+        return;
+      }
+
+      const formatted = JSON.stringify(parsed, null, getIndent());
+      formattedOutput.innerHTML = highlight(formatted);
+
+      // Tree
+      treeOutput.innerHTML = buildTree(parsed);
+      treeOutput.querySelectorAll('.tree-toggle').forEach(el => {
+        el.addEventListener('click', () => {
+          const target = document.getElementById(el.dataset.target);
+          const arrow = el.querySelector('.tree-arrow');
+          if (target.classList.contains('hidden')) {
+            target.classList.remove('hidden');
+            arrow.textContent = '▼';
+          } else {
+            target.classList.add('hidden');
+            arrow.textContent = '▶';
+          }
+        });
+      });
+
+      // Status
+      statusBar.classList.remove('hidden');
+      const statusValid = document.getElementById('statusValid');
+      statusValid.textContent = '✓ Valid JSON';
+      statusValid.className = 'text-sm px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400';
+
+      const bytes = new TextEncoder().encode(formatted).length;
+      const sizeLabel = bytes > 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${bytes} B`;
+      document.getElementById('statusSize').textContent = `Size: ${sizeLabel}`;
+
+      // Secrets
+      const secrets = detectSecrets(parsed);
+      const statusSecrets = document.getElementById('statusSecrets');
+      if (secrets.length > 0) {
+        statusSecrets.classList.remove('hidden');
+        statusSecrets.textContent = `⚠ ${secrets.length} secret${secrets.length > 1 ? 's' : ''} found`;
+        statusSecrets.className = 'text-sm px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400';
+
+        secretWarnings.classList.remove('hidden');
+        secretList.innerHTML = secrets.map(s =>
+          `<div class="flex flex-col sm:flex-row sm:items-center gap-1 text-sm">
+            <span class="text-amber-400 font-medium">${escapeHtml(s.type)}</span>
+            <span class="text-gray-500 hidden sm:inline">·</span>
+            <code class="text-gray-400 text-xs">${escapeHtml(s.path)}</code>
+            <span class="text-gray-500 hidden sm:inline">·</span>
+            <code class="text-red-400/70 text-xs bg-red-500/10 px-1.5 py-0.5 rounded">${escapeHtml(s.value)}</code>
+          </div>`
+        ).join('');
+      } else {
+        statusSecrets.classList.add('hidden');
+      }
+    }
+
+    // --- Format / Minify ---
+    function format() {
+      const raw = input.value.trim();
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        input.value = JSON.stringify(parsed, null, getIndent());
+        render(input.value);
+      } catch { render(raw); }
+    }
+
+    function minify() {
+      const raw = input.value.trim();
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        input.value = JSON.stringify(parsed);
+        render(input.value);
+      } catch { render(raw); }
+    }
+
+    // --- Events ---
+    let debounce;
+    input.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => render(input.value), 150);
+    });
+
+    document.getElementById('formatBtn').addEventListener('click', format);
+    document.getElementById('minifyBtn').addEventListener('click', minify);
+    document.getElementById('indentSelect').addEventListener('change', () => { if (input.value.trim()) format(); });
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const text = formattedOutput.textContent || input.value;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+      });
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const text = formattedOutput.textContent || input.value;
+      if (!text.trim()) return;
+      const blob = new Blob([text], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'formatted.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      input.value = '';
+      render('');
+    });
+
+    const SAMPLE = JSON.stringify({
+      "name": "halfday-app",
+      "version": "2.1.0",
+      "config": {
+        "api_key": "my-super-secret-api-key-value",
+        "aws_access_key_id": "AKIAIOSFODNN7EXAMPLE",
+        "aws_secret_access_key": "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",
+        "github_token": "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx1234",
+        "database_url": "postgres://admin:password123@db.example.com:5432/mydb",
+        "jwt_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+      },
+      "features": ["auth", "billing", "notifications"],
+      "metadata": {
+        "created": "2025-01-15T10:30:00Z",
+        "environment": "production",
+        "debug": false,
+        "max_retries": 3,
+        "slack_webhook": "xoxb-0000000000000-0000000000000-XXXXXXXXXXXX"
+      }
+    }, null, 2);
+
+    document.getElementById('sampleBtn').addEventListener('click', () => {
+      input.value = SAMPLE;
+      render(SAMPLE);
+    });
+  </script>
+</Layout>
