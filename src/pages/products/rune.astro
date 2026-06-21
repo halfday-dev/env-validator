@@ -1,0 +1,407 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const title = "Halfday Rune — Encrypted Notes for Obsidian";
+const description = "An Obsidian plugin that encrypts notes with age (X25519). Plaintext never touches disk. Multi-recipient, live-preview markdown, rotate keys when you need to.";
+---
+<Layout title={title} description={description}>
+  <div class="max-w-5xl mx-auto w-full">
+
+    <!-- Trust Banner -->
+    <div class="mb-8 flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3 text-emerald-400 text-sm">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      <span><strong>Plaintext never hits disk.</strong> Decryption happens in memory; only age ciphertext is written. Open source, Apache 2.0, ~95 tests.</span>
+    </div>
+
+    <!-- Hero -->
+    <div class="mb-10">
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4">encrypted notes for Obsidian — for an era when everything else reads your files.</h1>
+      <p class="text-gray-400 text-lg leading-relaxed mb-6">
+        Your Obsidian vault is plaintext markdown. So is the input to every desktop AI assistant, sync provider, and disk-indexing agent on your machine. Halfday Rune encrypts notes with <a href="https://age-encryption.org/" class="text-emerald-400 hover:underline">age</a>, opens them inline in Obsidian, and never writes the cleartext back to disk.
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="https://github.com/halfday-dev/halfday-rune/releases/latest" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-emerald-500 hover:bg-emerald-400 text-gray-900 font-semibold transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Install Halfday Rune
+        </a>
+        <a href="https://buymeacoffee.com/halfday" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          Buy me a coffee
+        </a>
+        <a href="https://github.com/halfday-dev/halfday-rune" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-transparent border border-gray-700 hover:bg-gray-800 text-gray-300 font-medium transition">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.92.58.1.79-.25.79-.56v-2c-3.2.69-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.69 1.24 3.34.95.1-.74.4-1.24.73-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.45.11-3.02 0 0 .97-.31 3.18 1.18a11 11 0 015.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.57.24 2.73.12 3.02.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.4-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56C20.21 21.38 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+
+      <p class="text-gray-500 text-xs mt-4">
+        Available now in Obsidian's Community Plugins — search "Halfday Rune" in Browse, or install manually below.
+      </p>
+    </div>
+
+    <!-- Hero screenshot -->
+    <div class="my-10 rounded-lg border border-gray-800 overflow-hidden bg-gray-950">
+      <img src="/images/rune/rune-hero.png" alt="Halfday Rune — an encrypted .age note open in Obsidian with live-preview markdown" class="w-full block" />
+    </div>
+
+    <!-- Why this exists -->
+    <section class="my-12">
+      <h2 class="text-2xl font-semibold mb-4">why this exists</h2>
+      <div class="space-y-4 text-gray-300 leading-relaxed">
+        <p>
+          A typical knowledge worker now has four to seven background services that can read every plaintext file in their Obsidian vault, and most of them touch an LLM. Claude Desktop with an MCP filesystem server. ChatGPT macOS reading files through the Accessibility API. Cursor indexing your workspace to its servers. GitHub Copilot building a semantic index across whatever folder VS Code happens to have open. Spotlight feeding Apple Intelligence. Dropbox, OneDrive, and friends quietly enabling AI features by default.
+        </p>
+        <p>
+          Obsidian Sync is end-to-end encrypted between your devices. Your vault on your disk is not. That gap is what Rune closes.
+        </p>
+        <p class="text-sm text-gray-400">
+          For the full pitch with citations: <a href="/blog/halfday-rune-secure-obsidian-ai-era" class="text-emerald-400 hover:underline">Using Obsidian Securely in the AI Era</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- What it does -->
+    <section class="my-12">
+      <h2 class="text-2xl font-semibold mb-6">what it does</h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">born-encrypted notes</h3>
+              <p class="text-sm text-gray-400">New private notes are created as <code class="text-gray-300">.age</code> ciphertext. Plaintext only ever lives in memory — never a stray <code class="text-gray-300">.md</code> on disk, never a swap file, never an auto-save.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">live-preview markdown</h3>
+              <p class="text-sm text-gray-400">Headings, bold, italic, inline code, links, wikilinks, fenced code, lists — they render the same way they do in any Obsidian note. Move the cursor into a line to edit the raw syntax. It looks like Obsidian because it is Obsidian.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">multi-recipient encryption</h3>
+              <p class="text-sm text-gray-400">Encrypt to any number of age recipients — your daily-driver key plus an offline backup, say. Decrypt with any matching identity. No more "I lost the passphrase, I lost the notes."</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">rotate vault keys</h3>
+              <p class="text-sm text-gray-400">One command re-encrypts every <code class="text-gray-300">.age</code> file in the vault to your current recipients. Pre-rotation backup copy by default. Round-trip-verified per-file before overwrite.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">decrypt back to .md</h3>
+              <p class="text-sm text-gray-400">When you want to leave encryption — or just need a plaintext export — one command converts an <code class="text-gray-300">.age</code> file back to <code class="text-gray-300">.md</code>. Replace mode or scratch mode; your choice.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">hardened rendering</h3>
+              <p class="text-sm text-gray-400">No DOM injection, no auto-image-load, no transclusion, no script execution. Encrypted notes route through a custom view that never reaches Obsidian's metadata cache, search index, or backlinks graph.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="my-12">
+      <h2 class="text-2xl font-semibold mb-6">how it works</h2>
+      <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-6">
+        <ol class="space-y-4 text-gray-300">
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold flex items-center justify-center">1</span>
+            <div>
+              <p>Install the plugin and configure your recipients — one <code class="text-gray-200">age1...</code> public key per line. Use your existing age identity, or run <code class="text-gray-200">age-keygen</code> to make one in 30 seconds.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold flex items-center justify-center">2</span>
+            <div>
+              <p>Run <span class="text-gray-200 font-mono text-sm">Halfday Rune: New private note</span> from the command palette. The file is born as <code class="text-gray-200">.age</code> ciphertext. No plaintext stage, ever.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold flex items-center justify-center">3</span>
+            <div>
+              <p>Have existing notes? <span class="text-gray-200 font-mono text-sm">Encrypt current note → .age</span> seals them. The plaintext source is deleted only after the ciphertext round-trip-verifies — if anything fails, your original is preserved.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold flex items-center justify-center">4</span>
+            <div>
+              <p>Click any <code class="text-gray-200">.age</code> file in the file tree. It opens inline in Obsidian, decrypted to memory only. Save with <kbd class="px-1.5 py-0.5 text-xs bg-gray-800 border border-gray-700 rounded">cmd-S</kbd> or after 30s of inactivity; close the tab and the plaintext is gone.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Mid-page screenshots -->
+    <section class="my-12 grid sm:grid-cols-2 gap-4">
+      <div>
+        <div class="rounded-lg border border-gray-800 overflow-hidden bg-gray-950">
+          <img src="/images/rune/rune-recipients.png" alt="Recipients editor in Halfday Rune settings" class="w-full block" />
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Recipients editor — paste age1 keys, validate inline, save.</p>
+      </div>
+      <div>
+        <div class="rounded-lg border border-gray-800 overflow-hidden bg-gray-950">
+          <img src="/images/rune/rune-rotate.png" alt="Rotate vault keys confirmation modal" class="w-full block" />
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Rotate vault keys — confirm modal with backup option.</p>
+      </div>
+      <div class="sm:col-span-2">
+        <div class="rounded-lg border border-gray-800 overflow-hidden bg-gray-950">
+          <img src="/images/rune/rune-statusbar.png" alt="Halfday Rune status bar showing clean state" class="w-full block" />
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Status bar — round-trip verified, no plaintext on disk.</p>
+      </div>
+    </section>
+
+    <!-- Trust signals -->
+    <section class="my-12">
+      <h2 class="text-2xl font-semibold mb-6">why you can trust it</h2>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div class="rounded-lg border border-gray-800 bg-gray-900/30 p-4">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.971-4.029 9-9 9-1.795 0-3.467-.527-4.872-1.434L3 21l1.434-4.128A8.952 8.952 0 013 12c0-4.971 4.029-9 9-9s9 4.029 9 9z"/></svg>
+            <span class="text-sm"><strong class="text-gray-100">We don't roll our own crypto.</strong> Rune wraps <a href="https://github.com/FiloSottile/typage" class="text-emerald-400 hover:underline">typage</a> — the TypeScript port of <a href="https://github.com/FiloSottile/age" class="text-emerald-400 hover:underline">age</a> by Filippo Valsorda.</span>
+          </div>
+        </div>
+        <div class="rounded-lg border border-gray-800 bg-gray-900/30 p-4">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            <span class="text-sm"><strong class="text-gray-100">Open source, Apache 2.0.</strong> Read the source, fork it, audit it. <a href="https://github.com/halfday-dev/halfday-rune" class="text-emerald-400 hover:underline">GitHub</a>.</span>
+          </div>
+        </div>
+        <div class="rounded-lg border border-gray-800 bg-gray-900/30 p-4">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <span class="text-sm"><strong class="text-gray-100">Threat model published.</strong> What Rune protects, and what it doesn't — <a href="https://github.com/halfday-dev/halfday-rune#threat-model" class="text-emerald-400 hover:underline">in the README</a>.</span>
+          </div>
+        </div>
+        <div class="rounded-lg border border-gray-800 bg-gray-900/30 p-4">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            <span class="text-sm"><strong class="text-gray-100">~95 tests on every commit.</strong> Round-trip, sanitization, key rotation, error paths.</span>
+          </div>
+        </div>
+        <div class="rounded-lg border border-gray-800 bg-gray-900/30 p-4">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <span class="text-sm"><strong class="text-gray-100">Built in public.</strong> The methodology, the bugs, the fixes — <a href="/blog/building-halfday-rune-with-ai" class="text-emerald-400 hover:underline">Building Halfday Rune With AI</a>.</span>
+          </div>
+        </div>
+        <div class="rounded-lg border border-gray-800 bg-gray-900/30 p-4">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span class="text-sm"><strong class="text-gray-100">Private security disclosure.</strong> Email <a href="mailto:hello@halfday.dev" class="text-emerald-400 hover:underline">hello@halfday.dev</a> — not a public issue.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="my-12">
+      <h2 class="text-2xl font-semibold mb-4">how it compares</h2>
+      <p class="text-gray-400 mb-6 leading-relaxed">
+        There are other encryption plugins for Obsidian, and a few of them are good. Rune's wedge is being the only one that combines all four of: <strong class="text-gray-200">age + recipients + live preview + key rotation</strong>. Pick the one that matches your threat model.
+      </p>
+
+      <div class="rounded-lg border border-gray-800 overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-900/70 border-b border-gray-800">
+            <tr>
+              <th class="text-left px-4 py-3 font-semibold text-gray-300">Capability</th>
+              <th class="text-left px-4 py-3 font-semibold text-gray-300">Meld Encrypt</th>
+              <th class="text-left px-4 py-3 font-semibold text-gray-300">Age Encrypt</th>
+              <th class="text-left px-4 py-3 font-semibold text-gray-300">gpgCrypt</th>
+              <th class="text-left px-4 py-3 font-semibold text-emerald-400">Rune</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800 text-gray-400">
+            <tr>
+              <td class="px-4 py-3">Cryptography</td>
+              <td class="px-4 py-3">AES-GCM (custom)</td>
+              <td class="px-4 py-3">age (passphrase)</td>
+              <td class="px-4 py-3">OpenPGP</td>
+              <td class="px-4 py-3 text-emerald-400">age (X25519)</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Multi-recipient</td>
+              <td class="px-4 py-3">No</td>
+              <td class="px-4 py-3">No</td>
+              <td class="px-4 py-3">Manual</td>
+              <td class="px-4 py-3 text-emerald-400">Yes</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Live-preview encrypted notes</td>
+              <td class="px-4 py-3">Partial</td>
+              <td class="px-4 py-3">No (fenced blocks)</td>
+              <td class="px-4 py-3">Yes</td>
+              <td class="px-4 py-3 text-emerald-400">Yes</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Built-in key rotation</td>
+              <td class="px-4 py-3">No</td>
+              <td class="px-4 py-3">No</td>
+              <td class="px-4 py-3">Manual</td>
+              <td class="px-4 py-3 text-emerald-400">Yes</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Dependency footprint</td>
+              <td class="px-4 py-3">Plugin only</td>
+              <td class="px-4 py-3">Plugin only</td>
+              <td class="px-4 py-3">Needs GPG / smartcard</td>
+              <td class="px-4 py-3 text-emerald-400">Plugin only</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Hardware key support</td>
+              <td class="px-4 py-3">No</td>
+              <td class="px-4 py-3">No</td>
+              <td class="px-4 py-3">Yes (GPG smartcards)</td>
+              <td class="px-4 py-3 text-emerald-400">Planned (Secure Enclave, v1.0)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-xs text-gray-500 mt-3">
+        Honest framing: none of these plugins (Rune included) have a third-party formal audit. Rune leans on typage and the published age spec for crypto correctness. <a href="https://github.com/halfday-dev/halfday-rune#threat-model" class="text-emerald-400 hover:underline">Threat model</a> spells out exactly what that means.
+      </p>
+    </section>
+
+    <!-- Install -->
+    <section class="my-12">
+      <h2 class="text-2xl font-semibold mb-4">install</h2>
+
+      <div class="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-5 mb-6 text-sm text-gray-300">
+        <p class="mb-2"><strong class="text-emerald-400">Easiest install:</strong> open <span class="font-mono text-gray-200">Settings → Community plugins → Browse</span> in Obsidian, search <strong>Halfday Rune</strong>, and click Install — like any other community plugin. The manual steps below are an alternative if you prefer.</p>
+      </div>
+
+      <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-6">
+        <ol class="space-y-4 text-gray-300">
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-gray-800 border border-gray-700 text-gray-300 text-sm font-semibold flex items-center justify-center">1</span>
+            <div>
+              <p>Download <code class="text-gray-200">main.js</code>, <code class="text-gray-200">manifest.json</code>, and <code class="text-gray-200">styles.css</code> from the <a href="https://github.com/halfday-dev/halfday-rune/releases/latest" class="text-emerald-400 hover:underline">latest GitHub release</a>.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-gray-800 border border-gray-700 text-gray-300 text-sm font-semibold flex items-center justify-center">2</span>
+            <div>
+              <p>Drop the three files into <code class="text-gray-200">&lt;your-vault&gt;/.obsidian/plugins/halfday-rune/</code>.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-gray-800 border border-gray-700 text-gray-300 text-sm font-semibold flex items-center justify-center">3</span>
+            <div>
+              <p>Restart Obsidian. Enable the plugin in <span class="font-mono text-sm text-gray-200">Settings → Community plugins</span>. (If you've never enabled a community plugin before, you'll need to flip the "Turn on community plugins" switch first.)</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-gray-800 border border-gray-700 text-gray-300 text-sm font-semibold flex items-center justify-center">4</span>
+            <div>
+              <p>Open <span class="font-mono text-sm text-gray-200">Settings → Halfday Rune</span>, paste your <code class="text-gray-200">age1...</code> public keys into the Recipients field, save.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="mt-6 pt-6 border-t border-gray-800 text-sm text-gray-400">
+          <p class="mb-2"><strong class="text-gray-200">Don't have an age keypair yet?</strong> One line of shell:</p>
+          <pre class="bg-gray-950 border border-gray-800 rounded-md p-3 font-mono text-xs text-gray-300 overflow-x-auto"><code>mkdir -p ~/.age && chmod 700 ~/.age
+age-keygen -o ~/.age/vault.identity
+chmod 600 ~/.age/vault.identity</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="my-12">
+      <h2 class="text-2xl font-semibold mb-4">what's next</h2>
+      <ul class="space-y-3 text-gray-300">
+        <li class="flex gap-3">
+          <span class="text-emerald-400 mt-1">→</span>
+          <div><strong class="text-emerald-400">✓ Shipped</strong> — live in the Obsidian Community Plugins catalog. One-click install via Browse.</div>
+        </li>
+        <li class="flex gap-3">
+          <span class="text-emerald-400 mt-1">→</span>
+          <div><strong class="text-gray-100">Phase 2</strong> — click-to-navigate wikilinks inside encrypted notes, syntax highlighting in fenced code blocks, mobile build.</div>
+        </li>
+        <li class="flex gap-3">
+          <span class="text-emerald-400 mt-1">→</span>
+          <div><strong class="text-gray-100">Long-term</strong> — <a href="https://github.com/remko/age-plugin-se" class="text-emerald-400 hover:underline">age-plugin-se</a> integration so your identity can be guarded by Secure Enclave / TouchID instead of a file on disk.</div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Sponsor -->
+    <section class="my-12">
+      <div class="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-6">
+        <h2 class="text-xl font-semibold mb-3 text-gray-100">support the work</h2>
+        <p class="text-gray-300 leading-relaxed mb-4">
+          Halfday is a small shop building open-source tools for AI-era privacy. Rune is free and always will be. If Rune is part of how you sleep at night, buying us a coffee is the thank-you path.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="https://buymeacoffee.com/halfday" class="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-emerald-500 hover:bg-emerald-400 text-gray-900 font-semibold text-sm transition">
+            Buy me a coffee
+          </a>
+          <a href="https://github.com/halfday-dev/halfday-rune" class="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium text-sm transition">
+            Star the repo
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Follow -->
+    <section class="my-12 border-t border-gray-800 pt-8">
+      <h2 class="text-lg font-semibold mb-4 text-gray-200">read & follow</h2>
+      <ul class="space-y-2 text-sm text-gray-400">
+        <li><a href="/blog/halfday-rune-secure-obsidian-ai-era" class="text-emerald-400 hover:underline">Using Obsidian Securely in the AI Era</a> — the long-form pitch, with citations.</li>
+        <li><a href="/blog/building-halfday-rune-with-ai" class="text-emerald-400 hover:underline">Building Halfday Rune With AI</a> — methodology, parallel-subagent review loop, the bugs we hit.</li>
+        <li><a href="https://github.com/halfday-dev/halfday-rune" class="text-emerald-400 hover:underline">GitHub: halfday-rune</a> — source, releases, issues.</li>
+        <li><a href="/" class="text-emerald-400 hover:underline">halfday.dev</a> — other tools we've built.</li>
+        <li><a href="mailto:hello@halfday.dev" class="text-emerald-400 hover:underline">hello@halfday.dev</a> — security disclosures, questions, hellos.</li>
+      </ul>
+    </section>
+
+  </div>
+</Layout>
