@@ -1,0 +1,181 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const title = "Halfday Drop — Encrypted, Self-Destructing Links";
+const description = "Send a secret through a link that encrypts in your browser and burns after it's read. No account, no plaintext on the server, no trace. Free.";
+---
+<Layout title={title} description={description}>
+  <div class="max-w-5xl mx-auto w-full">
+
+    <!-- Trust Banner -->
+    <div class="mb-8 flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-3 text-emerald-400 text-sm">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      <span><strong>Encrypted in your browser.</strong> The key rides in the link and is never sent to us — the server only ever stores ciphertext it can't read. Burns after it's been viewed.</span>
+    </div>
+
+    <!-- Hero -->
+    <div class="mb-10">
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4">share a secret through a link that reads once, then disappears.</h1>
+      <p class="text-gray-400 text-lg leading-relaxed mb-6">
+        A password, an API key, a private note. Paste it into Halfday Drop and your browser encrypts it before it leaves your machine. You get a one-time link; we get ciphertext we can't open. The recipient reads it, and after a set number of views — or a few days — it's gone for good. No account, on either end.
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="https://drop.halfday.dev" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-emerald-500 hover:bg-emerald-400 text-gray-900 font-semibold transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Create a drop
+        </a>
+        <a href="https://buymeacoffee.com/halfday" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          Buy me a coffee
+        </a>
+      </div>
+
+      <p class="text-gray-500 text-xs mt-4">
+        Free. No sign-up. Open <a href="https://drop.halfday.dev" class="text-emerald-400 hover:underline">drop.halfday.dev</a> and you're sending in about ten seconds.
+      </p>
+    </div>
+
+    <!-- Why this exists -->
+    <section class="my-12">
+      <h2 class="text-2xl font-semibold mb-4">why this exists</h2>
+      <div class="space-y-4 text-gray-300 leading-relaxed">
+        <p>
+          Sometimes you just need to hand someone a secret — a server password, a recovery code, a one-off private message. Email and Slack are the wrong place for it: those messages sit in inboxes, logs, and backups more or less forever.
+        </p>
+        <p>
+          The dedicated options each have a catch. Signal wants a phone number. PGP wants a CS degree. Most "anonymous paste" sites aren't actually encrypted — they just look like they are. Drop is the small, honest version of the idea: the encryption happens in your browser, the link self-destructs, and there's nothing to sign up for.
+        </p>
+        <p class="text-sm text-gray-400">
+          Drop doesn't reinvent anything. It's a clean, hosted take on the one-time-secret pattern (think PrivateBin), built so the server genuinely can't read your data and the link genuinely goes away. That's the whole pitch.
+        </p>
+      </div>
+    </section>
+
+    <!-- What it does -->
+    <section class="my-12">
+      <h2 class="text-2xl font-semibold mb-6">what it does</h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">encrypted in your browser</h3>
+              <p class="text-sm text-gray-400">AES-256-GCM via the Web Crypto API. The key is generated locally and lives in the link's <code class="text-gray-300">#fragment</code> — the part browsers never send to a server. We store ciphertext we have no way to decrypt.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">burns after reading</h3>
+              <p class="text-sm text-gray-400">Choose how many views (1–10) and how long it lives (up to 7 days). When either runs out, the record holding it deletes itself. A second visit just says the secret is gone — because it is.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">optional passphrase</h3>
+              <p class="text-sm text-gray-400">Add a second factor so even someone holding the link can't open it without the word. The passphrase is mixed into the key in your browser and never reaches us either. Wrong guesses cost nothing — they're checked locally.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 7.824a5 5 0 01-7.072 0m0 0L3 21m4.243-4.243a9 9 0 010-12.728"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">no accounts, either end</h3>
+              <p class="text-sm text-gray-400">Nobody signs up. You paste a secret and share a link; the recipient clicks it and reads. No email, no profile, no app to install. That's the entire flow.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">zero-knowledge by design</h3>
+              <p class="text-sm text-gray-400">No plaintext anywhere on the server. No logging of IPs or the link fragment. A strict content-security-policy, no third-party scripts, no ads. The threat model is written down, not implied.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-100 mb-1">honest about its limits</h3>
+              <p class="text-sm text-gray-400">Text only, for now. Cloudflare's edge sees basic request metadata regardless of what we do — for high-stakes sends, use Tor. We'd rather tell you the edges than pretend they aren't there.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="my-12">
+      <h2 class="text-2xl font-semibold mb-6">how it works</h2>
+      <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-6">
+        <ol class="space-y-4 text-gray-300">
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold flex items-center justify-center">1</span>
+            <div><p>Open <a href="https://drop.halfday.dev" class="text-emerald-400 hover:underline">drop.halfday.dev</a>, paste your secret, and pick how many views and how long it should last. Add a passphrase if you want a second factor.</p></div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold flex items-center justify-center">2</span>
+            <div><p>Your browser encrypts it and hands you a link like <code class="text-gray-200">drop.halfday.dev/s/abc123#&lt;key&gt;</code>. Everything after the <code class="text-gray-200">#</code> is the decryption key — it lives only in the link and never reaches the server.</p></div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold flex items-center justify-center">3</span>
+            <div><p>Send the link however you like. The recipient opens it and clicks <span class="text-gray-200 font-mono text-sm">Reveal</span> — nothing is fetched until they do, so link-scanners and previews can't burn it early.</p></div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold flex items-center justify-center">4</span>
+            <div><p>After the last allowed view — or when the timer runs out — the drop deletes itself. Open the link again and it simply says the secret is gone.</p></div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Honest footer / what it's not -->
+    <section class="my-12">
+      <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-6 text-sm text-gray-400 leading-relaxed">
+        <p class="text-gray-300 font-semibold mb-2">what it isn't</p>
+        <p>
+          Drop isn't a messaging app, a file host, or a replacement for a password manager. It's a single, narrow tool: hand someone a secret over a link that the server can't read and that disappears after it's used. If you need encrypted files, long-lived storage, or a full chat, this isn't it — and that's on purpose.
+        </p>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="my-12 text-center">
+      <h2 class="text-2xl font-semibold mb-3">send your first one</h2>
+      <p class="text-gray-400 mb-6">Free, no account, encrypted before it leaves your browser.</p>
+      <a href="https://drop.halfday.dev" class="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-emerald-500 hover:bg-emerald-400 text-gray-900 font-semibold transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Create a drop
+      </a>
+    </section>
+
+  </div>
+</Layout>
