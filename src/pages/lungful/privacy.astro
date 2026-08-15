@@ -1,0 +1,65 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const effectiveDate = 'August 14, 2026';
+
+const sections = [
+  {
+    heading: 'What Lungful stores',
+    body: "Your saved breathing patterns and app preferences are stored on your device, in the app's local storage. They stay on your device — Lungful never transmits them anywhere. (Like most app data, they may be included in your device backups, which you control and Apple handles under its privacy policy.) Lungful has no servers, no accounts, and no analytics. The only network activity in the app is Apple's StoreKit, which processes the one-time in-app purchase; that transaction is handled entirely by Apple.",
+  },
+  {
+    heading: 'What we can see about you',
+    body: 'Nothing. We cannot see your patterns, your usage, or that you use Lungful at all. Purchase records are handled entirely by Apple under their privacy policy. Lungful does not access HealthKit or any health data.',
+  },
+  {
+    heading: 'Data retention and deletion',
+    body: 'Everything Lungful stores lives only on your device and is retained until you delete it. Deleting the app deletes all of its data. Because we never receive any of your data, there is nothing to request deletion of from us — deleting the app is a complete erasure, and no consent-revocation step is needed.',
+  },
+  {
+    heading: 'Third parties',
+    body: "Lungful contains no third-party SDKs, analytics, or trackers. The only third party involved is Apple, which processes in-app purchases through the App Store under Apple's privacy policy (apple.com/legal/privacy), which provides at least the same level of protection described here. Lungful also contains a link to halfday.dev that opens in your browser; that website, like any website, may receive standard request data (such as your IP address) when you visit.",
+  },
+  {
+    heading: 'Children',
+    body: 'Lungful collects no data from anyone, including children.',
+  },
+  {
+    heading: 'Changes',
+    body: "If a future version of Lungful ever changes any of the above, we will update this policy and the app's App Store privacy label, and the new version of the app will disclose the change. Changes never apply retroactively to data already on your device.",
+  },
+  {
+    heading: 'Who we are',
+    body: 'Lungful is published by Halfday LLC (New Mexico, USA), the party responsible for this policy. Questions: hello@halfday.dev. If you email us, we receive your email address and message, and use them only to respond.',
+  },
+];
+---
+<Layout
+  title="Lungful Privacy Policy — Halfday"
+  description="Lungful collects no data. No servers, no accounts, no analytics. This page is short because there is nothing to disclose."
+>
+  <div class="max-w-3xl mx-auto">
+    <p class="text-sm text-emerald-400/70 mb-2">Lungful</p>
+    <h1 class="text-3xl font-bold tracking-tight mb-3">Privacy Policy</h1>
+    <p class="text-gray-500 text-sm mb-10">Effective {effectiveDate}</p>
+
+    <div class="p-6 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.04] mb-10">
+      <p class="text-gray-200 leading-relaxed">
+        Lungful collects no data. This page is short because there is nothing to disclose.
+      </p>
+    </div>
+
+    <div class="space-y-8">
+      {sections.map((section) => (
+        <section>
+          <h2 class="text-lg font-semibold mb-2">{section.heading}</h2>
+          <p class="text-gray-400 leading-relaxed">{section.body}</p>
+        </section>
+      ))}
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-white/[0.06]">
+      <a href="/" class="text-sm text-gray-500 hover:text-emerald-400 transition">← halfday.dev</a>
+    </div>
+  </div>
+</Layout>
